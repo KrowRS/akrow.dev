@@ -1,0 +1,10 @@
+name = "stroodlenoodle-api"
+main = "worker/index.ts"
+compatibility_date = "2025-02-04"
+
+[vars]
+FRONTEND_ORIGIN = "http://localhost:5173"
+
+# Set these with:
+# wrangler secret put SUPABASE_URL
+# wrangler secret put SUPABASE_SERVICE_ROLE_KEY
