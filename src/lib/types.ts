@@ -23,22 +23,16 @@ export interface ContentCategoryGroup {
   contents: ContentItem[];
 }
 
-export interface ExpansionGroup {
-  id: string;
-  name: string;
-  shortName: string;
-  releaseOrder: number;
-  categories: ContentCategoryGroup[];
-}
-
 export interface ContentResponse {
-  expansions: ExpansionGroup[];
+  expansionId: string;
+  categories: ContentCategoryGroup[];
 }
 
 export interface SubmitEntryRequest {
   contentId: string;
   ign: string;
   role: SignupRole;
+  expansionId?: string;
 }
 
 export const roleLabels: Record<SignupRole, string> = {

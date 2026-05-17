@@ -134,3 +134,222 @@ begin
   );
 end;
 $$;
+
+create or replace function role_entries_for_content(p_content_id text, p_role signup_role)
+returns jsonb
+language sql
+stable
+as $$
+  select coalesce(
+    jsonb_agg(
+      jsonb_build_object(
+        'ign', entries.ign,
+        'createdAt', entries.created_at,
+        'updatedAt', entries.updated_at
+      )
+      order by entries.ign_normalized
+    ),
+    '[]'::jsonb
+  )
+  from (
+    select u.ign, u.ign_normalized, cr.created_at, cr.updated_at
+    from content_roles cr
+    join users u on u.id = cr.user_id
+    where cr.content_id = p_content_id
+      and cr.role = p_role
+    order by u.ign_normalized
+  ) entries;
+$$;
+
+create or replace function list_content_for_category(
+  p_category_id text,
+  p_expansion_id text default null
+)
+returns jsonb
+language sql
+stable
+as $$
+  select coalesce(
+    jsonb_agg(
+      jsonb_build_object(
+        'id', filtered_content.id,
+        'name', filtered_content.name,
+        'shortName', filtered_content.short_name,
+        'sortOrder', filtered_content.sort_order,
+        'entries', jsonb_build_object(
+          'helper', role_entries_for_content(filtered_content.id, 'helper'),
+          'derust', role_entries_for_content(filtered_content.id, 'derust'),
+          'learner', role_entries_for_content(filtered_content.id, 'learner')
+        )
+      )
+      order by filtered_content.sort_order
+    ),
+    '[]'::jsonb
+  )
+  from (
+    select c.id, c.name, c.short_name, c.sort_order
+    from content c
+    where c.category_id = p_category_id
+      and c.is_active = true
+      and (p_expansion_id is null or c.expansion_id = p_expansion_id)
+    order by c.sort_order
+  ) filtered_content;
+$$;
+
+create or replace function list_ultimate_content()
+returns jsonb
+language sql
+stable
+as $$
+  select jsonb_build_object(
+    'id', category.id,
+    'name', category.name,
+    'sortOrder', category.sort_order,
+    'contents', list_content_for_category('ultimate')
+  )
+  from content_categories category
+  where category.id = 'ultimate'
+    and category.is_active = true;
+$$;
+
+create or replace function list_extreme_content(p_expansion_id text default 'dawntrail')
+returns jsonb
+language sql
+stable
+as $$
+  select jsonb_build_object(
+    'id', category.id,
+    'name', category.name,
+    'sortOrder', category.sort_order,
+    'contents', list_content_for_category('extreme_trial', p_expansion_id)
+  )
+  from content_categories category
+  where category.id = 'extreme_trial'
+    and category.is_active = true;
+$$;
+
+create or replace function list_savage_content(p_expansion_id text default 'dawntrail')
+returns jsonb
+language sql
+stable
+as $$
+  select jsonb_build_object(
+    'id', category.id,
+    'name', category.name,
+    'sortOrder', category.sort_order,
+    'contents', list_content_for_category('savage_raid', p_expansion_id)
+  )
+  from content_categories category
+  where category.id = 'savage_raid'
+    and category.is_active = true;
+$$;
+
+
+create or replace function role_entries_for_content(p_content_id text, p_role signup_role)
+returns jsonb
+language sql
+stable
+as $$
+  select coalesce(
+    jsonb_agg(
+      jsonb_build_object(
+        'ign', entries.ign,
+        'createdAt', entries.created_at,
+        'updatedAt', entries.updated_at
+      )
+      order by entries.ign_normalized
+    ),
+    '[]'::jsonb
+  )
+  from (
+    select u.ign, u.ign_normalized, cr.created_at, cr.updated_at
+    from content_roles cr
+    join users u on u.id = cr.user_id
+    where cr.content_id = p_content_id
+      and cr.role = p_role
+    order by u.ign_normalized
+  ) entries;
+$$;
+
+create or replace function list_content_for_category(
+  p_category_id text,
+  p_expansion_id text default null
+)
+returns jsonb
+language sql
+stable
+as $$
+  select coalesce(
+    jsonb_agg(
+      jsonb_build_object(
+        'id', filtered_content.id,
+        'name', filtered_content.name,
+        'shortName', filtered_content.short_name,
+        'sortOrder', filtered_content.sort_order,
+        'entries', jsonb_build_object(
+          'helper', role_entries_for_content(filtered_content.id, 'helper'),
+          'derust', role_entries_for_content(filtered_content.id, 'derust'),
+          'learner', role_entries_for_content(filtered_content.id, 'learner')
+        )
+      )
+      order by filtered_content.sort_order
+    ),
+    '[]'::jsonb
+  )
+  from (
+    select c.id, c.name, c.short_name, c.sort_order
+    from content c
+    where c.category_id = p_category_id
+      and c.is_active = true
+      and (p_expansion_id is null or c.expansion_id = p_expansion_id)
+    order by c.sort_order
+  ) filtered_content;
+$$;
+
+create or replace function list_ultimate_content()
+returns jsonb
+language sql
+stable
+as $$
+  select jsonb_build_object(
+    'id', category.id,
+    'name', category.name,
+    'sortOrder', category.sort_order,
+    'contents', list_content_for_category('ultimate')
+  )
+  from content_categories category
+  where category.id = 'ultimate'
+    and category.is_active = true;
+$$;
+
+create or replace function list_extreme_content(p_expansion_id text default 'dawntrail')
+returns jsonb
+language sql
+stable
+as $$
+  select jsonb_build_object(
+    'id', category.id,
+    'name', category.name,
+    'sortOrder', category.sort_order,
+    'contents', list_content_for_category('extreme_trial', p_expansion_id)
+  )
+  from content_categories category
+  where category.id = 'extreme_trial'
+    and category.is_active = true;
+$$;
+
+create or replace function list_savage_content(p_expansion_id text default 'dawntrail')
+returns jsonb
+language sql
+stable
+as $$
+  select jsonb_build_object(
+    'id', category.id,
+    'name', category.name,
+    'sortOrder', category.sort_order,
+    'contents', list_content_for_category('savage_raid', p_expansion_id)
+  )
+  from content_categories category
+  where category.id = 'savage_raid'
+    and category.is_active = true;
+$$;

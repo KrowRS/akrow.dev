@@ -1,4 +1,4 @@
-import type { ContentResponse, SubmitEntryRequest } from './types';
+import type { ContentCategoryGroup, ContentResponse, SubmitEntryRequest } from './types';
 
 async function readJson<T>(response: Response): Promise<T> {
   const body = (await response.json().catch(() => null)) as T | { error?: string } | null;
@@ -14,12 +14,37 @@ async function readJson<T>(response: Response): Promise<T> {
   return body as T;
 }
 
-export async function fetchContent(): Promise<ContentResponse> {
-  const response = await fetch('/api/content');
-  return readJson<ContentResponse>(response);
+export async function fetchContent(expansionId = 'dawntrail'): Promise<ContentResponse> {
+  const [ultimates, extremes, savages] = await Promise.all([
+    fetchUltimates(),
+    fetchExtremes(expansionId),
+    fetchSavages(expansionId)
+  ]);
+
+  return {
+    expansionId,
+    categories: [ultimates, extremes, savages]
+  };
 }
 
-export async function submitEntry(payload: SubmitEntryRequest): Promise<ContentResponse> {
+export async function fetchUltimates(): Promise<ContentCategoryGroup> {
+  const response = await fetch('/api/content/ultimates');
+  return readJson<ContentCategoryGroup>(response);
+}
+
+export async function fetchExtremes(expansionId = 'dawntrail'): Promise<ContentCategoryGroup> {
+  const params = new URLSearchParams({ expansionId });
+  const response = await fetch(`/api/content/extremes?${params.toString()}`);
+  return readJson<ContentCategoryGroup>(response);
+}
+
+export async function fetchSavages(expansionId = 'dawntrail'): Promise<ContentCategoryGroup> {
+  const params = new URLSearchParams({ expansionId });
+  const response = await fetch(`/api/content/savages?${params.toString()}`);
+  return readJson<ContentCategoryGroup>(response);
+}
+
+export async function submitEntry(payload: SubmitEntryRequest): Promise<void> {
   const response = await fetch('/api/entries', {
     method: 'PUT',
     headers: {
@@ -28,5 +53,5 @@ export async function submitEntry(payload: SubmitEntryRequest): Promise<ContentR
     body: JSON.stringify(payload)
   });
 
-  return readJson<ContentResponse>(response);
+  await readJson<{ ok: true }>(response);
 }

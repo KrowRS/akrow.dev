@@ -2,10 +2,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type {
   ContentCategoryGroup,
-  ContentItem,
-  ContentResponse,
-  ExpansionGroup,
-  RoleEntries,
   SignupRole,
   SubmitEntryRequest,
 } from "../src/lib/types";
@@ -23,39 +19,6 @@ interface SupabaseRpcError {
   message?: string;
 }
 
-interface SupabaseExpansionRow {
-  id: string;
-  name: string;
-  short_name: string;
-  release_order: number;
-}
-
-interface SupabaseCategoryRow {
-  id: string;
-  name: string;
-  sort_order: number;
-}
-
-interface SupabaseContentRow {
-  id: string;
-  expansion_id: string;
-  category_id: string;
-  name: string;
-  short_name: string | null;
-  sort_order: number;
-}
-
-interface SupabaseEntryRow {
-  content_id: string;
-  role: SignupRole;
-  created_at: string;
-  updated_at: string;
-  users: {
-    ign: string;
-    ign_normalized: string;
-  };
-}
-
 const roles: SignupRole[] = ["helper", "derust", "learner"];
 
 const app = new Hono<{ Bindings: Env }>();
@@ -69,9 +32,25 @@ app.use(
   }),
 );
 
-app.get("/api/content", async (c) => {
-  const content = await getContent(c.env);
-  return c.json(content);
+app.get("/api/content/ultimates", async (c) => {
+  const category = await getCategory(c.env, "list_ultimate_content", {});
+  return c.json(category);
+});
+
+app.get("/api/content/extremes", async (c) => {
+  const expansionId = c.req.query("expansionId") || "dawntrail";
+  const category = await getCategory(c.env, "list_extreme_content", {
+    p_expansion_id: expansionId,
+  });
+  return c.json(category);
+});
+
+app.get("/api/content/savages", async (c) => {
+  const expansionId = c.req.query("expansionId") || "dawntrail";
+  const category = await getCategory(c.env, "list_savage_content", {
+    p_expansion_id: expansionId,
+  });
+  return c.json(category);
 });
 
 app.put("/api/entries", async (c) => {
@@ -102,8 +81,7 @@ app.put("/api/entries", async (c) => {
     );
   }
 
-  const content = await getContent(c.env);
-  return c.json(content);
+  return c.json({ ok: true });
 });
 
 app.notFound((c) => c.json({ error: "Not found." }, 404));
@@ -135,148 +113,18 @@ function validateEntry(payload: SubmitEntryRequest): string | null {
   return null;
 }
 
-async function getContent(env: Env): Promise<ContentResponse> {
-  const [expansions, categories, content, entries] = await Promise.all([
-    supabaseSelect<SupabaseExpansionRow[]>(
-      env,
-      "/rest/v1/expansions?select=id,name,short_name,release_order&is_active=eq.true&order=release_order.asc",
-    ),
-    supabaseSelect<SupabaseCategoryRow[]>(
-      env,
-      "/rest/v1/content_categories?select=id,name,sort_order&is_active=eq.true&order=sort_order.asc",
-    ),
-    supabaseSelect<SupabaseContentRow[]>(
-      env,
-      "/rest/v1/content?select=id,expansion_id,category_id,name,short_name,sort_order&is_active=eq.true&order=sort_order.asc",
-    ),
-    supabaseSelect<SupabaseEntryRow[]>(
-      env,
-      "/rest/v1/content_roles?select=content_id,role,created_at,updated_at,users!inner(ign,ign_normalized)",
-    ),
-  ]);
-  console.log(expansions, categories, content, entries);
-  return buildContentResponse(expansions, categories, content, entries);
-}
+async function getCategory(
+  env: Env,
+  functionName: string,
+  body: Record<string, unknown>,
+): Promise<ContentCategoryGroup> {
+  const result = await supabaseRpc<ContentCategoryGroup>(env, functionName, body);
 
-function buildContentResponse(
-  expansionRows: SupabaseExpansionRow[],
-  categoryRows: SupabaseCategoryRow[],
-  contentRows: SupabaseContentRow[],
-  entryRows: SupabaseEntryRow[],
-): ContentResponse {
-  const entriesByContent = new Map<string, RoleEntries>();
-
-  for (const item of contentRows) {
-    entriesByContent.set(item.id, emptyRoleEntries());
+  if (!result.ok) {
+    throw new Error(result.error.message || "Unable to load content.");
   }
 
-  for (const entry of entryRows) {
-    const contentEntries = entriesByContent.get(entry.content_id);
-    if (!contentEntries || !roles.includes(entry.role)) {
-      continue;
-    }
-
-    contentEntries[entry.role].push({
-      ign: entry.users.ign,
-      createdAt: entry.created_at,
-      updatedAt: entry.updated_at,
-    });
-  }
-
-  for (const contentEntries of entriesByContent.values()) {
-    for (const role of roles) {
-      contentEntries[role].sort((left, right) =>
-        left.ign.localeCompare(right.ign),
-      );
-    }
-  }
-
-  const contentByExpansionAndCategory = new Map<string, ContentItem[]>();
-
-  for (const item of contentRows) {
-    const key = groupKey(item.expansion_id, item.category_id);
-    const group = contentByExpansionAndCategory.get(key) ?? [];
-    group.push({
-      id: item.id,
-      name: item.name,
-      shortName: item.short_name,
-      sortOrder: item.sort_order,
-      entries: entriesByContent.get(item.id) ?? emptyRoleEntries(),
-    });
-    contentByExpansionAndCategory.set(key, group);
-  }
-
-  const expansions: ExpansionGroup[] = [];
-
-  for (const expansion of expansionRows) {
-    const groupedCategories: ContentCategoryGroup[] = [];
-
-    for (const category of categoryRows) {
-      const contents =
-        contentByExpansionAndCategory.get(
-          groupKey(expansion.id, category.id),
-        ) ?? [];
-      if (contents.length === 0) {
-        continue;
-      }
-
-      groupedCategories.push({
-        id: category.id,
-        name: category.name,
-        sortOrder: category.sort_order,
-        contents: contents.sort(
-          (left, right) => left.sortOrder - right.sortOrder,
-        ),
-      });
-    }
-
-    if (groupedCategories.length === 0) {
-      continue;
-    }
-
-    expansions.push({
-      id: expansion.id,
-      name: expansion.name,
-      shortName: expansion.short_name,
-      releaseOrder: expansion.release_order,
-      categories: groupedCategories,
-    });
-  }
-
-  return { expansions };
-}
-
-function emptyRoleEntries(): RoleEntries {
-  return {
-    helper: [],
-    derust: [],
-    learner: [],
-  };
-}
-
-function groupKey(expansionId: string, categoryId: string): string {
-  return `${expansionId}:${categoryId}`;
-}
-
-async function supabaseSelect<T>(env: Env, path: string): Promise<T> {
-  const response = await fetch(`${env.SUPABASE_URL}${path}`, {
-    headers: {
-      apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-      authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-    },
-  });
-
-  const payload = (await response.json().catch(() => null)) as
-    | T
-    | SupabaseRpcError
-    | null;
-
-  if (!response.ok) {
-    const error = payload as SupabaseRpcError | null;
-    throw new Error(error?.message || "Supabase request failed.");
-  }
-
-  return payload as T;
+  return result.data;
 }
 
 async function supabaseRpc<T = unknown>(
