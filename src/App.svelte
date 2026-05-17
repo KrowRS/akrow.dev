@@ -28,6 +28,7 @@
   let editMode = false;
   let draftRoles: Record<string, SignupRole | undefined> = {};
   let dirtyContentIds = new Set<string>();
+  let dirtySelectionCount = 0;
   let savePending = false;
   let saveMessage = '';
 
@@ -54,6 +55,7 @@
     editMode = false;
     draftRoles = {};
     dirtyContentIds = new Set();
+    dirtySelectionCount = 0;
     saveMessage = '';
     syncVisibleSelections();
   }
@@ -73,6 +75,7 @@
     editMode = false;
     draftRoles = {};
     dirtyContentIds = new Set();
+    dirtySelectionCount = 0;
     syncVisibleSelections();
     saveMessage = '';
   }
@@ -84,6 +87,7 @@
 
     draftRoles = { ...draftRoles, [contentId]: role };
     dirtyContentIds = new Set(dirtyContentIds).add(contentId);
+    dirtySelectionCount = dirtyContentIds.size;
     saveMessage = '';
   }
 
@@ -110,6 +114,7 @@
       await submitEntries({ ign, entries });
       await refreshLoadedCategories();
       dirtyContentIds = new Set();
+      dirtySelectionCount = 0;
       editMode = false;
       saveMessage = 'Saved.';
     } catch (error) {
@@ -258,10 +263,6 @@
     return value.trim().replace(/\s+/g, ' ').toLowerCase();
   }
 
-  function hasDraftChanges() {
-    return dirtyContentIds.size > 0;
-  }
-
   function categoryTone(categoryId: string) {
     if (categoryId === 'ultimate') {
       return 'ult';
@@ -315,7 +316,7 @@
           class="profile-btn primary"
           type="button"
           on:click={saveDraft}
-          disabled={savePending || !hasDraftChanges()}
+          disabled={savePending}
         >
           {savePending ? 'Saving' : 'Save'}
         </button>
