@@ -14,15 +14,19 @@ async function readJson<T>(response: Response): Promise<T> {
   return body as T;
 }
 
-export async function fetchContent(expansionId = 'dawntrail'): Promise<ContentResponse> {
+export async function fetchContent(
+  extremeExpansionId = 'dawntrail',
+  savageExpansionId = 'dawntrail'
+): Promise<ContentResponse> {
   const [ultimates, extremes, savages] = await Promise.all([
     fetchUltimates(),
-    fetchExtremes(expansionId),
-    fetchSavages(expansionId)
+    fetchExtremes(extremeExpansionId),
+    fetchSavages(savageExpansionId)
   ]);
 
   return {
-    expansionId,
+    extremeExpansionId,
+    savageExpansionId,
     categories: [ultimates, extremes, savages]
   };
 }

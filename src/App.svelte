@@ -1,11 +1,29 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchContent, submitEntry } from './lib/api';
-  import { roleLabels, roles, type ContentResponse, type SignupRole } from './lib/types';
+  import { fetchContent, fetchExtremes, fetchSavages, fetchUltimates, submitEntry } from './lib/api';
+  import {
+    roleLabels,
+    roles,
+    type ContentCategoryGroup,
+    type ContentResponse,
+    type SignupRole
+  } from './lib/types';
+
+  const expansions = [
+    { id: 'arr', shortName: 'ARR', name: 'A Realm Reborn' },
+    { id: 'heavensward', shortName: 'HW', name: 'Heavensward' },
+    { id: 'stormblood', shortName: 'SB', name: 'Stormblood' },
+    { id: 'shadowbringers', shortName: 'ShB', name: 'Shadowbringers' },
+    { id: 'endwalker', shortName: 'EW', name: 'Endwalker' },
+    { id: 'dawntrail', shortName: 'DT', name: 'Dawntrail' }
+  ];
 
   let data: ContentResponse | null = null;
   let loading = true;
   let globalError = '';
+  let selectedExtremeExpansion = 'dawntrail';
+  let selectedSavageExpansion = 'dawntrail';
+  let categoryLoading = '';
   let selectedRoles: Record<string, SignupRole | undefined> = {};
   let names: Record<string, string> = {};
   let pendingContentId = '';
@@ -20,7 +38,7 @@
     globalError = '';
 
     try {
-      data = await fetchContent();
+      data = await fetchContent(selectedExtremeExpansion, selectedSavageExpansion);
     } catch (error) {
       globalError = error instanceof Error ? error.message : 'Unable to load content.';
     } finally {
@@ -42,8 +60,8 @@
     pendingContentId = contentId;
 
     try {
-      await submitEntry({ contentId, ign, role, expansionId: data?.expansionId });
-      data = await fetchContent(data?.expansionId ?? 'dawntrail');
+      await submitEntry({ contentId, ign, role });
+      await refreshContentCategory(contentId);
       names = { ...names, [contentId]: '' };
       submitMessages = { ...submitMessages, [contentId]: 'Saved.' };
     } catch (error) {
@@ -54,6 +72,81 @@
     } finally {
       pendingContentId = '';
     }
+  }
+
+  async function changeExtremeExpansion(expansionId: string) {
+    if (selectedExtremeExpansion === expansionId || categoryLoading) {
+      return;
+    }
+
+    selectedExtremeExpansion = expansionId;
+    categoryLoading = 'extreme_trial';
+    globalError = '';
+
+    try {
+      const category = await fetchExtremes(expansionId);
+      replaceCategory(category);
+      if (data) {
+        data = { ...data, extremeExpansionId: expansionId };
+      }
+    } catch (error) {
+      globalError = error instanceof Error ? error.message : 'Unable to load extremes.';
+    } finally {
+      categoryLoading = '';
+    }
+  }
+
+  async function changeSavageExpansion(expansionId: string) {
+    if (selectedSavageExpansion === expansionId || categoryLoading) {
+      return;
+    }
+
+    selectedSavageExpansion = expansionId;
+    categoryLoading = 'savage_raid';
+    globalError = '';
+
+    try {
+      const category = await fetchSavages(expansionId);
+      replaceCategory(category);
+      if (data) {
+        data = { ...data, savageExpansionId: expansionId };
+      }
+    } catch (error) {
+      globalError = error instanceof Error ? error.message : 'Unable to load savages.';
+    } finally {
+      categoryLoading = '';
+    }
+  }
+
+  async function refreshContentCategory(contentId: string) {
+    const categoryId = data?.categories.find((category) =>
+      category.contents.some((content) => content.id === contentId)
+    )?.id;
+
+    if (categoryId === 'extreme_trial') {
+      replaceCategory(await fetchExtremes(selectedExtremeExpansion));
+      return;
+    }
+
+    if (categoryId === 'savage_raid') {
+      replaceCategory(await fetchSavages(selectedSavageExpansion));
+      return;
+    }
+
+    replaceCategory(await fetchUltimates());
+  }
+
+  function replaceCategory(category: ContentCategoryGroup) {
+    if (!data) {
+      return;
+    }
+
+    data = {
+      ...data,
+      categories: data.categories.map((currentCategory) =>
+        currentCategory.id === category.id ? category : currentCategory
+      )
+    };
   }
 </script>
 
@@ -83,12 +176,50 @@
     <section class="expansion-section" aria-labelledby="content-heading">
       <div class="section-heading">
         <h2 id="content-heading">Available Content</h2>
-        <span>{data.expansionId}</span>
+        <span>Ultimates · Extremes · Savages</span>
       </div>
 
       {#each data.categories as category}
         <div class="category-block">
-          <h3>{category.name}</h3>
+          <div class="category-heading">
+            <h3>{category.name}</h3>
+            {#if category.id === 'extreme_trial'}
+              <div class="expansion-tabs" role="tablist" aria-label="Extreme trial expansion">
+                {#each expansions as expansion}
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={selectedExtremeExpansion === expansion.id}
+                    class:active={selectedExtremeExpansion === expansion.id}
+                    disabled={categoryLoading !== ''}
+                    title={expansion.name}
+                    on:click={() => changeExtremeExpansion(expansion.id)}
+                  >
+                    {expansion.shortName}
+                  </button>
+                {/each}
+              </div>
+            {:else if category.id === 'savage_raid'}
+              <div class="expansion-tabs" role="tablist" aria-label="Savage raid expansion">
+                {#each expansions as expansion}
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={selectedSavageExpansion === expansion.id}
+                    class:active={selectedSavageExpansion === expansion.id}
+                    disabled={categoryLoading !== ''}
+                    title={expansion.name}
+                    on:click={() => changeSavageExpansion(expansion.id)}
+                  >
+                    {expansion.shortName}
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          </div>
+          {#if categoryLoading === category.id}
+            <p class="category-status">Loading {category.name.toLowerCase()}...</p>
+          {/if}
           <div class="card-grid">
             {#each category.contents as content}
               <article class="content-card">

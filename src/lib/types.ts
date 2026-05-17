@@ -24,7 +24,8 @@ export interface ContentCategoryGroup {
 }
 
 export interface ContentResponse {
-  expansionId: string;
+  extremeExpansionId: string;
+  savageExpansionId: string;
   categories: ContentCategoryGroup[];
 }
 

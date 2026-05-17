@@ -120,11 +120,49 @@ h1 {
   margin-top: 24px;
 }
 
-.category-block h3 {
+.category-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
   margin-bottom: 14px;
+}
+
+.category-heading h3 {
   color: #315f64;
   font-size: 1.1rem;
   text-transform: uppercase;
+}
+
+.expansion-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.expansion-tabs button {
+  min-width: 44px;
+  min-height: 34px;
+  border: 1px solid #b8b0a5;
+  border-radius: 6px;
+  background: #fffaf2;
+  color: #283238;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.expansion-tabs button.active {
+  border-color: #8a3a3a;
+  background: #8a3a3a;
+  color: #fff;
+}
+
+.category-status {
+  margin: -6px 0 12px;
+  color: #6a5b4d;
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .card-grid {
@@ -275,6 +313,15 @@ li,
 
   .entry-groups section {
     min-height: auto;
+  }
+
+  .category-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .expansion-tabs {
+    justify-content: flex-start;
   }
 }
 
