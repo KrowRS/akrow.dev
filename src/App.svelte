@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchContent, fetchExtremes, fetchSavages, fetchUltimates, submitEntry } from './lib/api';
+  import { fetchContent, fetchExtremes, fetchSavages, fetchUltimates, submitEntries } from './lib/api';
   import {
     roleLabels,
     roles,
@@ -24,10 +24,12 @@
   let selectedExtremeExpansion = 'dawntrail';
   let selectedSavageExpansion = 'dawntrail';
   let categoryLoading = '';
-  let selectedRoles: Record<string, SignupRole | undefined> = {};
-  let names: Record<string, string> = {};
-  let pendingContentId = '';
-  let submitMessages: Record<string, string> = {};
+  let masterName = '';
+  let editMode = false;
+  let draftRoles: Record<string, SignupRole | undefined> = {};
+  let dirtyContentIds = new Set<string>();
+  let savePending = false;
+  let saveMessage = '';
 
   onMount(async () => {
     await loadContent();
@@ -39,6 +41,7 @@
 
     try {
       data = await fetchContent(selectedExtremeExpansion, selectedSavageExpansion);
+      syncVisibleSelections();
     } catch (error) {
       globalError = error instanceof Error ? error.message : 'Unable to load content.';
     } finally {
@@ -46,32 +49,105 @@
     }
   }
 
-  async function confirm(contentId: string) {
-    const ign = names[contentId]?.trim() ?? '';
-    const role = selectedRoles[contentId];
+  function handleNameInput(value: string) {
+    masterName = value;
+    editMode = false;
+    draftRoles = {};
+    dirtyContentIds = new Set();
+    saveMessage = '';
+    syncVisibleSelections();
+  }
 
-    submitMessages = { ...submitMessages, [contentId]: '' };
-
-    if (!ign || !role) {
-      submitMessages = { ...submitMessages, [contentId]: 'Enter your IGN and choose a role.' };
+  function startEditMode() {
+    if (!masterName.trim()) {
+      saveMessage = 'Enter your character name before editing.';
       return;
     }
 
-    pendingContentId = contentId;
+    syncVisibleSelections();
+    editMode = true;
+    saveMessage = '';
+  }
+
+  function cancelEditMode() {
+    editMode = false;
+    draftRoles = {};
+    dirtyContentIds = new Set();
+    syncVisibleSelections();
+    saveMessage = '';
+  }
+
+  function selectRole(contentId: string, role: SignupRole) {
+    if (!editMode) {
+      return;
+    }
+
+    draftRoles = { ...draftRoles, [contentId]: role };
+    dirtyContentIds = new Set(dirtyContentIds).add(contentId);
+    saveMessage = '';
+  }
+
+  async function saveDraft() {
+    const ign = masterName.trim();
+    const entries = Object.entries(draftRoles)
+      .filter(([, role]) => Boolean(role))
+      .map(([contentId, role]) => ({ contentId, role: role as SignupRole }));
+
+    if (!ign) {
+      saveMessage = 'Enter your character name before saving.';
+      return;
+    }
+
+    if (entries.length === 0) {
+      saveMessage = 'Choose at least one role before saving.';
+      return;
+    }
+
+    savePending = true;
+    saveMessage = '';
 
     try {
-      await submitEntry({ contentId, ign, role });
-      await refreshContentCategory(contentId);
-      names = { ...names, [contentId]: '' };
-      submitMessages = { ...submitMessages, [contentId]: 'Saved.' };
+      await submitEntries({ ign, entries });
+      await refreshLoadedCategories();
+      dirtyContentIds = new Set();
+      editMode = false;
+      saveMessage = 'Saved.';
     } catch (error) {
-      submitMessages = {
-        ...submitMessages,
-        [contentId]: error instanceof Error ? error.message : 'Unable to save entry.'
-      };
+      saveMessage = error instanceof Error ? error.message : 'Unable to save entries.';
     } finally {
-      pendingContentId = '';
+      savePending = false;
     }
+  }
+
+  async function refreshLoadedCategories() {
+    const categories = await Promise.all([
+      fetchUltimates(),
+      fetchExtremes(selectedExtremeExpansion),
+      fetchSavages(selectedSavageExpansion)
+    ]);
+
+    if (data) {
+      data = { ...data, categories };
+      syncVisibleSelections();
+    }
+  }
+
+  async function refreshContentCategory(contentId: string) {
+    const categoryId = data?.categories.find((category) =>
+      category.contents.some((content) => content.id === contentId)
+    )?.id;
+
+    if (categoryId === 'extreme_trial') {
+      replaceCategory(await fetchExtremes(selectedExtremeExpansion));
+      return;
+    }
+
+    if (categoryId === 'savage_raid') {
+      replaceCategory(await fetchSavages(selectedSavageExpansion));
+      return;
+    }
+
+    replaceCategory(await fetchUltimates());
   }
 
   async function changeExtremeExpansion(expansionId: string) {
@@ -118,24 +194,6 @@
     }
   }
 
-  async function refreshContentCategory(contentId: string) {
-    const categoryId = data?.categories.find((category) =>
-      category.contents.some((content) => content.id === contentId)
-    )?.id;
-
-    if (categoryId === 'extreme_trial') {
-      replaceCategory(await fetchExtremes(selectedExtremeExpansion));
-      return;
-    }
-
-    if (categoryId === 'savage_raid') {
-      replaceCategory(await fetchSavages(selectedSavageExpansion));
-      return;
-    }
-
-    replaceCategory(await fetchUltimates());
-  }
-
   function replaceCategory(category: ContentCategoryGroup) {
     if (!data) {
       return;
@@ -147,6 +205,61 @@
         currentCategory.id === category.id ? category : currentCategory
       )
     };
+
+    syncCategorySelections(category);
+  }
+
+  function syncVisibleSelections() {
+    if (!data || !masterName.trim()) {
+      return;
+    }
+
+    for (const category of data.categories) {
+      syncCategorySelections(category);
+    }
+  }
+
+  function syncCategorySelections(category: ContentCategoryGroup) {
+    if (!masterName.trim()) {
+      return;
+    }
+
+    const nextRoles = { ...draftRoles };
+
+    for (const content of category.contents) {
+      if (dirtyContentIds.has(content.id)) {
+        continue;
+      }
+
+      const existingRole = findRoleForName(content.entries);
+      if (existingRole) {
+        nextRoles[content.id] = existingRole;
+      } else {
+        delete nextRoles[content.id];
+      }
+    }
+
+    draftRoles = nextRoles;
+  }
+
+  function findRoleForName(entries: ContentCategoryGroup['contents'][number]['entries']) {
+    const normalizedName = normalizeName(masterName);
+
+    if (!normalizedName) {
+      return undefined;
+    }
+
+    return roles.find((role) =>
+      entries[role].some((entry) => normalizeName(entry.ign) === normalizedName)
+    );
+  }
+
+  function normalizeName(value: string) {
+    return value.trim().replace(/\s+/g, ' ').toLowerCase();
+  }
+
+  function hasDraftChanges() {
+    return dirtyContentIds.size > 0;
   }
 
   function categoryTone(categoryId: string) {
@@ -180,6 +293,42 @@
       Refresh
     </button>
   </header>
+
+  <section class="profile-panel" aria-label="Character profile">
+    <div class="profile-field">
+      <label for="master-name">Character Name</label>
+      <input
+        id="master-name"
+        value={masterName}
+        placeholder="Enter character name"
+        maxlength="64"
+        disabled={editMode || savePending}
+        on:input={(event) => handleNameInput(event.currentTarget.value)}
+      />
+    </div>
+    <div class="profile-actions">
+      {#if editMode}
+        <button class="profile-btn secondary" type="button" on:click={cancelEditMode} disabled={savePending}>
+          Cancel
+        </button>
+        <button
+          class="profile-btn primary"
+          type="button"
+          on:click={saveDraft}
+          disabled={savePending || !hasDraftChanges()}
+        >
+          {savePending ? 'Saving' : 'Save'}
+        </button>
+      {:else}
+        <button class="profile-btn primary" type="button" on:click={startEditMode} disabled={!masterName.trim()}>
+          Edit
+        </button>
+      {/if}
+    </div>
+    {#if saveMessage}
+      <p class:error={saveMessage !== 'Saved.'} class="profile-message">{saveMessage}</p>
+    {/if}
+  </section>
 
   {#if loading}
     <section class="state-panel">Loading content...</section>
@@ -261,37 +410,15 @@
                     <button
                       type="button"
                       class={role}
-                      class:active={selectedRoles[content.id] === role}
-                      aria-pressed={selectedRoles[content.id] === role}
-                      on:click={() => (selectedRoles = { ...selectedRoles, [content.id]: role })}
+                      class:active={draftRoles[content.id] === role}
+                      aria-pressed={draftRoles[content.id] === role}
+                      disabled={!editMode || savePending}
+                      on:click={() => selectRole(content.id, role)}
                     >
                       {roleLabels[role]}
                     </button>
                   {/each}
                 </div>
-
-                <div class="submit-row">
-                  <input
-                    aria-label={`In-game username for ${content.name}`}
-                    placeholder="In-game username"
-                    bind:value={names[content.id]}
-                    maxlength="64"
-                  />
-                  <button
-                    class="confirm-btn"
-                    type="button"
-                    on:click={() => confirm(content.id)}
-                    disabled={pendingContentId === content.id}
-                  >
-                    {pendingContentId === content.id ? 'Saving' : 'Confirm'}
-                  </button>
-                </div>
-
-                {#if submitMessages[content.id]}
-                  <p class:error={submitMessages[content.id] !== 'Saved.'} class="submit-message">
-                    {submitMessages[content.id]}
-                  </p>
-                {/if}
 
                 <div class="entry-groups">
                   {#each roles as role}

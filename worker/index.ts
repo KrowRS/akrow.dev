@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type {
   ContentCategoryGroup,
+  SubmitEntriesRequest,
   SignupRole,
   SubmitEntryRequest,
 } from "../src/lib/types";
@@ -84,6 +85,39 @@ app.put("/api/entries", async (c) => {
   return c.json({ ok: true });
 });
 
+app.put("/api/entries/batch", async (c) => {
+  let payload: SubmitEntriesRequest;
+
+  try {
+    payload = await c.req.json();
+  } catch {
+    return c.json({ error: "Request body must be valid JSON." }, 400);
+  }
+
+  const validationError = validateEntries(payload);
+  if (validationError) {
+    return c.json({ error: validationError }, 400);
+  }
+
+  const result = await supabaseRpc(c.env, "submit_content_roles_batch", {
+    p_ign: payload.ign,
+    p_entries: payload.entries.map((entry) => ({
+      contentId: entry.contentId,
+      role: entry.role,
+    })),
+  });
+
+  if (!result.ok) {
+    const status = result.error.code === "P0001" ? 400 : 500;
+    return c.json(
+      { error: result.error.message || "Unable to save entries." },
+      status,
+    );
+  }
+
+  return c.json({ ok: true });
+});
+
 app.notFound((c) => c.json({ error: "Not found." }, 404));
 
 function validateEntry(payload: SubmitEntryRequest): string | null {
@@ -108,6 +142,40 @@ function validateEntry(payload: SubmitEntryRequest): string | null {
 
   if (!roles.includes(payload.role)) {
     return "Role must be helper, derust, or learner.";
+  }
+
+  return null;
+}
+
+function validateEntries(payload: SubmitEntriesRequest): string | null {
+  if (!payload || typeof payload !== "object") {
+    return "Request body is required.";
+  }
+
+  if (typeof payload.ign !== "string" || payload.ign.trim().length === 0) {
+    return "In-game username is required.";
+  }
+
+  if (payload.ign.trim().length > 64) {
+    return "In-game username must be 64 characters or fewer.";
+  }
+
+  if (!Array.isArray(payload.entries) || payload.entries.length === 0) {
+    return "At least one role selection is required.";
+  }
+
+  for (const entry of payload.entries) {
+    if (
+      !entry ||
+      typeof entry.contentId !== "string" ||
+      entry.contentId.trim().length === 0
+    ) {
+      return "Each entry must include a contentId.";
+    }
+
+    if (!roles.includes(entry.role)) {
+      return "Each entry role must be helper, derust, or learner.";
+    }
   }
 
   return null;

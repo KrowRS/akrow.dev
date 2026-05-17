@@ -36,6 +36,14 @@ export interface SubmitEntryRequest {
   expansionId?: string;
 }
 
+export interface SubmitEntriesRequest {
+  ign: string;
+  entries: Array<{
+    contentId: string;
+    role: SignupRole;
+  }>;
+}
+
 export const roleLabels: Record<SignupRole, string> = {
   helper: 'Helper',
   derust: 'Derust',

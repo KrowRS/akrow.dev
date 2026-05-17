@@ -233,6 +233,108 @@ h1 span {
   text-transform: uppercase;
 }
 
+.profile-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 0 auto 18px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.92), rgba(17, 24, 39, 0.92));
+  padding: 18px;
+}
+
+.profile-field {
+  display: grid;
+  gap: 7px;
+}
+
+.profile-field label {
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+.profile-field input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.profile-field input::placeholder {
+  color: var(--text-dim);
+}
+
+.profile-field input:focus {
+  border-color: var(--blue-dim);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-btn {
+  min-height: 40px;
+  min-width: 92px;
+  border-radius: 3px;
+  padding: 9px 16px;
+  font-family: "Cinzel", serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.profile-btn.primary {
+  border: 1px solid var(--blue-dim);
+  background: linear-gradient(135deg, #1a3a6a, #0f2248);
+  color: var(--blue);
+}
+
+.profile-btn.primary:hover {
+  border-color: var(--blue);
+  box-shadow: 0 0 16px rgba(74, 158, 255, 0.2);
+}
+
+.profile-btn.secondary {
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text-dim);
+}
+
+.profile-btn.secondary:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+}
+
+.profile-message {
+  grid-column: 1 / -1;
+  color: var(--helper);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.profile-message.error {
+  color: var(--red);
+}
+
 .section-label {
   display: flex;
   align-items: center;
@@ -508,6 +610,12 @@ h1 span {
   color: var(--text);
 }
 
+.role-control button:disabled:not(.active) {
+  border-color: rgba(30, 45, 74, 0.75);
+  color: rgba(106, 122, 154, 0.45);
+  opacity: 1;
+}
+
 .role-control button.helper {
   border-color: rgba(64, 200, 112, 0.2);
 }
@@ -741,6 +849,18 @@ footer p + p {
   .category-heading,
   .expansion-tabs {
     justify-content: center;
+  }
+
+  .profile-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions {
+    justify-content: stretch;
+  }
+
+  .profile-btn {
+    flex: 1;
   }
 
   .card-grid {

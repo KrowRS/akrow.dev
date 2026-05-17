@@ -135,6 +135,66 @@ begin
 end;
 $$;
 
+create or replace function submit_content_roles_batch(
+  p_ign text,
+  p_entries jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_ign text;
+  v_ign_normalized text;
+  v_user_id uuid;
+  v_entry jsonb;
+  v_content_id text;
+  v_role signup_role;
+  v_saved_count integer := 0;
+begin
+  v_ign := regexp_replace(btrim(coalesce(p_ign, '')), '\s+', ' ', 'g');
+  v_ign_normalized := normalize_ign(v_ign);
+
+  if v_ign = '' then
+    raise exception 'In-game username is required.';
+  end if;
+
+  if length(v_ign) > 64 then
+    raise exception 'In-game username must be 64 characters or fewer.';
+  end if;
+
+  if jsonb_typeof(p_entries) <> 'array' or jsonb_array_length(p_entries) = 0 then
+    raise exception 'At least one role selection is required.';
+  end if;
+
+  insert into users (ign, ign_normalized)
+  values (v_ign, v_ign_normalized)
+  on conflict (ign_normalized)
+  do update set ign = excluded.ign
+  returning id into v_user_id;
+
+  for v_entry in select * from jsonb_array_elements(p_entries)
+  loop
+    v_content_id := v_entry->>'contentId';
+    v_role := (v_entry->>'role')::signup_role;
+
+    if not exists (select 1 from content where id = v_content_id and is_active = true) then
+      raise exception 'Content does not exist or is inactive.';
+    end if;
+
+    insert into content_roles (user_id, content_id, role)
+    values (v_user_id, v_content_id, v_role)
+    on conflict (user_id, content_id)
+    do update set role = excluded.role;
+
+    v_saved_count := v_saved_count + 1;
+  end loop;
+
+  return jsonb_build_object('savedCount', v_saved_count);
+end;
+$$;
+
 create or replace function role_entries_for_content(p_content_id text, p_role signup_role)
 returns jsonb
 language sql
@@ -244,112 +304,62 @@ as $$
     and category.is_active = true;
 $$;
 
-
-create or replace function role_entries_for_content(p_content_id text, p_role signup_role)
-returns jsonb
-language sql
-stable
-as $$
-  select coalesce(
-    jsonb_agg(
-      jsonb_build_object(
-        'ign', entries.ign,
-        'createdAt', entries.created_at,
-        'updatedAt', entries.updated_at
-      )
-      order by entries.ign_normalized
-    ),
-    '[]'::jsonb
-  )
-  from (
-    select u.ign, u.ign_normalized, cr.created_at, cr.updated_at
-    from content_roles cr
-    join users u on u.id = cr.user_id
-    where cr.content_id = p_content_id
-      and cr.role = p_role
-    order by u.ign_normalized
-  ) entries;
-$$;
-
-create or replace function list_content_for_category(
-  p_category_id text,
-  p_expansion_id text default null
+create or replace function submit_content_roles_batch(
+  p_ign text,
+  p_entries jsonb
 )
 returns jsonb
-language sql
-stable
+language plpgsql
+security definer
+set search_path = public
 as $$
-  select coalesce(
-    jsonb_agg(
-      jsonb_build_object(
-        'id', filtered_content.id,
-        'name', filtered_content.name,
-        'shortName', filtered_content.short_name,
-        'sortOrder', filtered_content.sort_order,
-        'entries', jsonb_build_object(
-          'helper', role_entries_for_content(filtered_content.id, 'helper'),
-          'derust', role_entries_for_content(filtered_content.id, 'derust'),
-          'learner', role_entries_for_content(filtered_content.id, 'learner')
-        )
-      )
-      order by filtered_content.sort_order
-    ),
-    '[]'::jsonb
-  )
-  from (
-    select c.id, c.name, c.short_name, c.sort_order
-    from content c
-    where c.category_id = p_category_id
-      and c.is_active = true
-      and (p_expansion_id is null or c.expansion_id = p_expansion_id)
-    order by c.sort_order
-  ) filtered_content;
-$$;
+declare
+  v_ign text;
+  v_ign_normalized text;
+  v_user_id uuid;
+  v_entry jsonb;
+  v_content_id text;
+  v_role signup_role;
+  v_saved_count integer := 0;
+begin
+  v_ign := regexp_replace(btrim(coalesce(p_ign, '')), '\s+', ' ', 'g');
+  v_ign_normalized := normalize_ign(v_ign);
 
-create or replace function list_ultimate_content()
-returns jsonb
-language sql
-stable
-as $$
-  select jsonb_build_object(
-    'id', category.id,
-    'name', category.name,
-    'sortOrder', category.sort_order,
-    'contents', list_content_for_category('ultimate')
-  )
-  from content_categories category
-  where category.id = 'ultimate'
-    and category.is_active = true;
-$$;
+  if v_ign = '' then
+    raise exception 'In-game username is required.';
+  end if;
 
-create or replace function list_extreme_content(p_expansion_id text default 'dawntrail')
-returns jsonb
-language sql
-stable
-as $$
-  select jsonb_build_object(
-    'id', category.id,
-    'name', category.name,
-    'sortOrder', category.sort_order,
-    'contents', list_content_for_category('extreme_trial', p_expansion_id)
-  )
-  from content_categories category
-  where category.id = 'extreme_trial'
-    and category.is_active = true;
-$$;
+  if length(v_ign) > 64 then
+    raise exception 'In-game username must be 64 characters or fewer.';
+  end if;
 
-create or replace function list_savage_content(p_expansion_id text default 'dawntrail')
-returns jsonb
-language sql
-stable
-as $$
-  select jsonb_build_object(
-    'id', category.id,
-    'name', category.name,
-    'sortOrder', category.sort_order,
-    'contents', list_content_for_category('savage_raid', p_expansion_id)
-  )
-  from content_categories category
-  where category.id = 'savage_raid'
-    and category.is_active = true;
+  if jsonb_typeof(p_entries) <> 'array' or jsonb_array_length(p_entries) = 0 then
+    raise exception 'At least one role selection is required.';
+  end if;
+
+  insert into users (ign, ign_normalized)
+  values (v_ign, v_ign_normalized)
+  on conflict (ign_normalized)
+  do update set ign = excluded.ign
+  returning id into v_user_id;
+
+  for v_entry in select * from jsonb_array_elements(p_entries)
+  loop
+    v_content_id := v_entry->>'contentId';
+    v_role := (v_entry->>'role')::signup_role;
+
+    if not exists (select 1 from content where id = v_content_id and is_active = true) then
+      raise exception 'Content does not exist or is inactive.';
+    end if;
+
+    insert into content_roles (user_id, content_id, role)
+    values (v_user_id, v_content_id, v_role)
+    on conflict (user_id, content_id)
+    do update set role = excluded.role;
+
+    v_saved_count := v_saved_count + 1;
+  end loop;
+
+  return jsonb_build_object('savedCount', v_saved_count);
+end;
 $$;
