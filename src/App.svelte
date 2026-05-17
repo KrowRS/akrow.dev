@@ -148,17 +148,33 @@
       )
     };
   }
+
+  function categoryTone(categoryId: string) {
+    if (categoryId === 'ultimate') {
+      return 'ult';
+    }
+
+    if (categoryId === 'extreme_trial') {
+      return 'ext';
+    }
+
+    return 'sav';
+  }
 </script>
 
 <svelte:head>
   <title>FFXIV Content Board</title>
 </svelte:head>
 
-<main class="page-shell">
-  <header class="page-header">
-    <div>
-      <p class="eyebrow">Final Fantasy XIV</p>
-      <h1>Content Board</h1>
+<main class="site-wrapper">
+  <header class="site-header">
+    <p class="header-eyebrow">Final Fantasy XIV</p>
+    <h1>Content <span>Tracker</span></h1>
+    <p class="subtitle">Community Endgame Board</p>
+    <div class="legend" aria-label="Content categories">
+      <div class="legend-item"><span class="legend-dot ult"></span>Ultimate</div>
+      <div class="legend-item"><span class="legend-dot ext"></span>Extreme</div>
+      <div class="legend-item"><span class="legend-dot sav"></span>Savage</div>
     </div>
     <button class="refresh-button" type="button" on:click={loadContent} disabled={loading}>
       Refresh
@@ -173,16 +189,13 @@
       <button type="button" on:click={loadContent}>Try again</button>
     </section>
   {:else if data}
-    <section class="expansion-section" aria-labelledby="content-heading">
-      <div class="section-heading">
-        <h2 id="content-heading">Available Content</h2>
-        <span>Ultimates · Extremes · Savages</span>
-      </div>
-
+    <section aria-label="Available content">
       {#each data.categories as category}
         <div class="category-block">
+          <div class={`section-label ${categoryTone(category.id)}`}>
+            <span>{category.name}</span>
+          </div>
           <div class="category-heading">
-            <h3>{category.name}</h3>
             {#if category.id === 'extreme_trial'}
               <div class="expansion-tabs" role="tablist" aria-label="Extreme trial expansion">
                 {#each expansions as expansion}
@@ -222,8 +235,19 @@
           {/if}
           <div class="card-grid">
             {#each category.contents as content}
-              <article class="content-card">
-                <div class="card-title-row">
+              <article class={`content-card ${categoryTone(category.id)}`}>
+                <div class="card-top-bar"></div>
+                <div class="card-body">
+                  <div class="card-badge">
+                    {#if category.id === 'ultimate'}
+                      Ultimate
+                    {:else if category.id === 'extreme_trial'}
+                      Extreme Trial
+                    {:else}
+                      Savage
+                    {/if}
+                  </div>
+                  <div class="card-title-row">
                   <div>
                     <h4>{content.name}</h4>
                     {#if content.shortName}
@@ -236,6 +260,7 @@
                   {#each roles as role}
                     <button
                       type="button"
+                      class={role}
                       class:active={selectedRoles[content.id] === role}
                       aria-pressed={selectedRoles[content.id] === role}
                       on:click={() => (selectedRoles = { ...selectedRoles, [content.id]: role })}
@@ -253,6 +278,7 @@
                     maxlength="64"
                   />
                   <button
+                    class="confirm-btn"
                     type="button"
                     on:click={() => confirm(content.id)}
                     disabled={pendingContentId === content.id}
@@ -269,15 +295,15 @@
 
                 <div class="entry-groups">
                   {#each roles as role}
-                    <section>
-                      <div class="entry-heading">
+                    <section class={`${role}-col`}>
+                      <div class={`entry-heading ${role}`}>
                         <strong>{roleLabels[role]}</strong>
                         <span>{content.entries[role].length}</span>
                       </div>
                       {#if content.entries[role].length}
                         <ul>
                           {#each content.entries[role] as entry}
-                            <li>{entry.ign}</li>
+                            <li class={role}>{entry.ign}</li>
                           {/each}
                         </ul>
                       {:else}
@@ -286,11 +312,16 @@
                     </section>
                   {/each}
                 </div>
+                </div>
               </article>
             {/each}
           </div>
         </div>
       {/each}
     </section>
+    <footer>
+      <p>FINAL FANTASY XIV ENDGAME TRACKER · COMMUNITY BOARD</p>
+      <p>Data is shared publicly. All characters are visible to all visitors.</p>
+    </footer>
   {/if}
 </main>
