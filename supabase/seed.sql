@@ -30,7 +30,6 @@ values
   ('dsr', 'endwalker', 'ultimate', 'Dragonsong''s Reprise (Ultimate)', 'DSR', 40),
   ('top', 'endwalker', 'ultimate', 'The Omega Protocol (Ultimate)', 'TOP', 50),
   ('fru', 'dawntrail', 'ultimate', 'Futures Rewritten (Ultimate)', 'FRU', 60),
-
   ('dt-ex1', 'dawntrail', 'extreme_trial', 'Worqor Lar Dor (Extreme)', 'EX1', 10),
   ('dt-ex2', 'dawntrail', 'extreme_trial', 'Everkeep (Extreme)', 'EX2', 20),
   ('dt-ex3', 'dawntrail', 'extreme_trial', 'The Minstrel''s Ballad: Sphene''s Burden', 'EX3', 30),
@@ -39,7 +38,6 @@ values
   ('dt-ex6', 'dawntrail', 'extreme_trial', 'The Windward Wilds (Extreme)', 'EX6', 60),
   ('dt-ex7', 'dawntrail', 'extreme_trial', 'Hell on Rails (Extreme)', 'EX7', 70),
   ('dt-ex8', 'dawntrail', 'extreme_trial', 'The Unmaking (Extreme)', 'EX8', 80),
-
   ('m1s', 'dawntrail', 'savage_raid', 'AAC Light-heavyweight M1 (Savage)', 'M1S', 10),
   ('m2s', 'dawntrail', 'savage_raid', 'AAC Light-heavyweight M2 (Savage)', 'M2S', 20),
   ('m3s', 'dawntrail', 'savage_raid', 'AAC Light-heavyweight M3 (Savage)', 'M3S', 30),

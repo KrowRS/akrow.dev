@@ -1,0 +1,267 @@
+{
+  "expansions": [
+    {
+      "id": "arr",
+      "name": "A Realm Reborn",
+      "shortName": "ARR",
+      "releaseOrder": 10
+    },
+    {
+      "id": "heavensward",
+      "name": "Heavensward",
+      "shortName": "HW",
+      "releaseOrder": 20
+    },
+    {
+      "id": "stormblood",
+      "name": "Stormblood",
+      "shortName": "SB",
+      "releaseOrder": 30
+    },
+    {
+      "id": "shadowbringers",
+      "name": "Shadowbringers",
+      "shortName": "ShB",
+      "releaseOrder": 40
+    },
+    {
+      "id": "endwalker",
+      "name": "Endwalker",
+      "shortName": "EW",
+      "releaseOrder": 50
+    },
+    {
+      "id": "dawntrail",
+      "name": "Dawntrail",
+      "shortName": "DT",
+      "releaseOrder": 60
+    }
+  ],
+  "categories": [
+    {
+      "id": "ultimate",
+      "name": "Ultimate Raids",
+      "sortOrder": 10
+    },
+    {
+      "id": "extreme_trial",
+      "name": "Extreme Trials",
+      "sortOrder": 20
+    },
+    {
+      "id": "savage_raid",
+      "name": "Savage Raids",
+      "sortOrder": 30
+    }
+  ],
+  "content": [
+    {
+      "id": "ucob",
+      "expansionId": "stormblood",
+      "categoryId": "ultimate",
+      "name": "The Unending Coil of Bahamut (Ultimate)",
+      "shortName": "UCOB",
+      "sortOrder": 10
+    },
+    {
+      "id": "uwu",
+      "expansionId": "stormblood",
+      "categoryId": "ultimate",
+      "name": "The Weapon's Refrain (Ultimate)",
+      "shortName": "UWU",
+      "sortOrder": 20
+    },
+    {
+      "id": "tea",
+      "expansionId": "shadowbringers",
+      "categoryId": "ultimate",
+      "name": "The Epic of Alexander (Ultimate)",
+      "shortName": "TEA",
+      "sortOrder": 30
+    },
+    {
+      "id": "dsr",
+      "expansionId": "endwalker",
+      "categoryId": "ultimate",
+      "name": "Dragonsong's Reprise (Ultimate)",
+      "shortName": "DSR",
+      "sortOrder": 40
+    },
+    {
+      "id": "top",
+      "expansionId": "endwalker",
+      "categoryId": "ultimate",
+      "name": "The Omega Protocol (Ultimate)",
+      "shortName": "TOP",
+      "sortOrder": 50
+    },
+    {
+      "id": "fru",
+      "expansionId": "dawntrail",
+      "categoryId": "ultimate",
+      "name": "Futures Rewritten (Ultimate)",
+      "shortName": "FRU",
+      "sortOrder": 60
+    },
+    {
+      "id": "dt-ex1",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "Worqor Lar Dor (Extreme)",
+      "shortName": "EX1",
+      "sortOrder": 10
+    },
+    {
+      "id": "dt-ex2",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "Everkeep (Extreme)",
+      "shortName": "EX2",
+      "sortOrder": 20
+    },
+    {
+      "id": "dt-ex3",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "The Minstrel's Ballad: Sphene's Burden",
+      "shortName": "EX3",
+      "sortOrder": 30
+    },
+    {
+      "id": "dt-ex4",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "Recollection (Extreme)",
+      "shortName": "EX4",
+      "sortOrder": 40
+    },
+    {
+      "id": "dt-ex5",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "The Minstrel's Ballad: Necron's Embrace",
+      "shortName": "EX5",
+      "sortOrder": 50
+    },
+    {
+      "id": "dt-ex6",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "The Windward Wilds (Extreme)",
+      "shortName": "EX6",
+      "sortOrder": 60
+    },
+    {
+      "id": "dt-ex7",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "Hell on Rails (Extreme)",
+      "shortName": "EX7",
+      "sortOrder": 70
+    },
+    {
+      "id": "dt-ex8",
+      "expansionId": "dawntrail",
+      "categoryId": "extreme_trial",
+      "name": "The Unmaking (Extreme)",
+      "shortName": "EX8",
+      "sortOrder": 80
+    },
+    {
+      "id": "m1s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Light-heavyweight M1 (Savage)",
+      "shortName": "M1S",
+      "sortOrder": 10
+    },
+    {
+      "id": "m2s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Light-heavyweight M2 (Savage)",
+      "shortName": "M2S",
+      "sortOrder": 20
+    },
+    {
+      "id": "m3s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Light-heavyweight M3 (Savage)",
+      "shortName": "M3S",
+      "sortOrder": 30
+    },
+    {
+      "id": "m4s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Light-heavyweight M4 (Savage)",
+      "shortName": "M4S",
+      "sortOrder": 40
+    },
+    {
+      "id": "m5s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Cruiserweight M1 (Savage)",
+      "shortName": "M5S",
+      "sortOrder": 50
+    },
+    {
+      "id": "m6s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Cruiserweight M2 (Savage)",
+      "shortName": "M6S",
+      "sortOrder": 60
+    },
+    {
+      "id": "m7s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Cruiserweight M3 (Savage)",
+      "shortName": "M7S",
+      "sortOrder": 70
+    },
+    {
+      "id": "m8s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Cruiserweight M4 (Savage)",
+      "shortName": "M8S",
+      "sortOrder": 80
+    },
+    {
+      "id": "m9s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Heavyweight M1 (Savage)",
+      "shortName": "M9S",
+      "sortOrder": 90
+    },
+    {
+      "id": "m10s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Heavyweight M2 (Savage)",
+      "shortName": "M10S",
+      "sortOrder": 100
+    },
+    {
+      "id": "m11s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Heavyweight M3 (Savage)",
+      "shortName": "M11S",
+      "sortOrder": 110
+    },
+    {
+      "id": "m12s",
+      "expansionId": "dawntrail",
+      "categoryId": "savage_raid",
+      "name": "AAC Heavyweight M4 (Savage)",
+      "shortName": "M12S",
+      "sortOrder": 120
+    }
+  ]
+}

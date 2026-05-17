@@ -13,11 +13,14 @@ Dynamic FFXIV content signup board with a Svelte frontend, Cloudflare Worker API
 2. Apply the Supabase schema and seed:
 
    ```sh
+   npm run generate:seed
    supabase db push
    supabase db execute --file supabase/seed.sql
    ```
 
-   Or run `supabase/migrations/0001_schema.sql` and `supabase/seed.sql` in the Supabase SQL editor.
+   Or run `supabase/migrations/0001_schema.sql` and the generated `supabase/seed.sql` in the Supabase SQL editor.
+
+   Content seed data lives in `data/content.json`. Edit that file for future/past expansion content, then run `npm run generate:seed`.
 
 3. Configure Worker secrets:
 
