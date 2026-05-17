@@ -1,267 +1,145 @@
 {
   "expansions": [
-    {
-      "id": "arr",
-      "name": "A Realm Reborn",
-      "shortName": "ARR",
-      "releaseOrder": 10
-    },
-    {
-      "id": "heavensward",
-      "name": "Heavensward",
-      "shortName": "HW",
-      "releaseOrder": 20
-    },
-    {
-      "id": "stormblood",
-      "name": "Stormblood",
-      "shortName": "SB",
-      "releaseOrder": 30
-    },
-    {
-      "id": "shadowbringers",
-      "name": "Shadowbringers",
-      "shortName": "ShB",
-      "releaseOrder": 40
-    },
-    {
-      "id": "endwalker",
-      "name": "Endwalker",
-      "shortName": "EW",
-      "releaseOrder": 50
-    },
-    {
-      "id": "dawntrail",
-      "name": "Dawntrail",
-      "shortName": "DT",
-      "releaseOrder": 60
-    }
+    { "id": "arr", "name": "A Realm Reborn", "shortName": "ARR", "releaseOrder": 10 },
+    { "id": "heavensward", "name": "Heavensward", "shortName": "HW", "releaseOrder": 20 },
+    { "id": "stormblood", "name": "Stormblood", "shortName": "SB", "releaseOrder": 30 },
+    { "id": "shadowbringers", "name": "Shadowbringers", "shortName": "ShB", "releaseOrder": 40 },
+    { "id": "endwalker", "name": "Endwalker", "shortName": "EW", "releaseOrder": 50 },
+    { "id": "dawntrail", "name": "Dawntrail", "shortName": "DT", "releaseOrder": 60 }
   ],
   "categories": [
-    {
-      "id": "ultimate",
-      "name": "Ultimate Raids",
-      "sortOrder": 10
-    },
-    {
-      "id": "extreme_trial",
-      "name": "Extreme Trials",
-      "sortOrder": 20
-    },
-    {
-      "id": "savage_raid",
-      "name": "Savage Raids",
-      "sortOrder": 30
-    }
+    { "id": "ultimate", "name": "Ultimate Raids", "sortOrder": 10 },
+    { "id": "extreme_trial", "name": "Extreme Trials", "sortOrder": 20 },
+    { "id": "savage_raid", "name": "Savage Raids", "sortOrder": 30 }
   ],
   "content": [
-    {
-      "id": "ucob",
-      "expansionId": "stormblood",
-      "categoryId": "ultimate",
-      "name": "The Unending Coil of Bahamut (Ultimate)",
-      "shortName": "UCOB",
-      "sortOrder": 10
-    },
-    {
-      "id": "uwu",
-      "expansionId": "stormblood",
-      "categoryId": "ultimate",
-      "name": "The Weapon's Refrain (Ultimate)",
-      "shortName": "UWU",
-      "sortOrder": 20
-    },
-    {
-      "id": "tea",
-      "expansionId": "shadowbringers",
-      "categoryId": "ultimate",
-      "name": "The Epic of Alexander (Ultimate)",
-      "shortName": "TEA",
-      "sortOrder": 30
-    },
-    {
-      "id": "dsr",
-      "expansionId": "endwalker",
-      "categoryId": "ultimate",
-      "name": "Dragonsong's Reprise (Ultimate)",
-      "shortName": "DSR",
-      "sortOrder": 40
-    },
-    {
-      "id": "top",
-      "expansionId": "endwalker",
-      "categoryId": "ultimate",
-      "name": "The Omega Protocol (Ultimate)",
-      "shortName": "TOP",
-      "sortOrder": 50
-    },
-    {
-      "id": "fru",
-      "expansionId": "dawntrail",
-      "categoryId": "ultimate",
-      "name": "Futures Rewritten (Ultimate)",
-      "shortName": "FRU",
-      "sortOrder": 60
-    },
-    {
-      "id": "dt-ex1",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "Worqor Lar Dor (Extreme)",
-      "shortName": "EX1",
-      "sortOrder": 10
-    },
-    {
-      "id": "dt-ex2",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "Everkeep (Extreme)",
-      "shortName": "EX2",
-      "sortOrder": 20
-    },
-    {
-      "id": "dt-ex3",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "The Minstrel's Ballad: Sphene's Burden",
-      "shortName": "EX3",
-      "sortOrder": 30
-    },
-    {
-      "id": "dt-ex4",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "Recollection (Extreme)",
-      "shortName": "EX4",
-      "sortOrder": 40
-    },
-    {
-      "id": "dt-ex5",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "The Minstrel's Ballad: Necron's Embrace",
-      "shortName": "EX5",
-      "sortOrder": 50
-    },
-    {
-      "id": "dt-ex6",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "The Windward Wilds (Extreme)",
-      "shortName": "EX6",
-      "sortOrder": 60
-    },
-    {
-      "id": "dt-ex7",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "Hell on Rails (Extreme)",
-      "shortName": "EX7",
-      "sortOrder": 70
-    },
-    {
-      "id": "dt-ex8",
-      "expansionId": "dawntrail",
-      "categoryId": "extreme_trial",
-      "name": "The Unmaking (Extreme)",
-      "shortName": "EX8",
-      "sortOrder": 80
-    },
-    {
-      "id": "m1s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Light-heavyweight M1 (Savage)",
-      "shortName": "M1S",
-      "sortOrder": 10
-    },
-    {
-      "id": "m2s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Light-heavyweight M2 (Savage)",
-      "shortName": "M2S",
-      "sortOrder": 20
-    },
-    {
-      "id": "m3s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Light-heavyweight M3 (Savage)",
-      "shortName": "M3S",
-      "sortOrder": 30
-    },
-    {
-      "id": "m4s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Light-heavyweight M4 (Savage)",
-      "shortName": "M4S",
-      "sortOrder": 40
-    },
-    {
-      "id": "m5s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Cruiserweight M1 (Savage)",
-      "shortName": "M5S",
-      "sortOrder": 50
-    },
-    {
-      "id": "m6s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Cruiserweight M2 (Savage)",
-      "shortName": "M6S",
-      "sortOrder": 60
-    },
-    {
-      "id": "m7s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Cruiserweight M3 (Savage)",
-      "shortName": "M7S",
-      "sortOrder": 70
-    },
-    {
-      "id": "m8s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Cruiserweight M4 (Savage)",
-      "shortName": "M8S",
-      "sortOrder": 80
-    },
-    {
-      "id": "m9s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Heavyweight M1 (Savage)",
-      "shortName": "M9S",
-      "sortOrder": 90
-    },
-    {
-      "id": "m10s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Heavyweight M2 (Savage)",
-      "shortName": "M10S",
-      "sortOrder": 100
-    },
-    {
-      "id": "m11s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Heavyweight M3 (Savage)",
-      "shortName": "M11S",
-      "sortOrder": 110
-    },
-    {
-      "id": "m12s",
-      "expansionId": "dawntrail",
-      "categoryId": "savage_raid",
-      "name": "AAC Heavyweight M4 (Savage)",
-      "shortName": "M12S",
-      "sortOrder": 120
-    }
+    { "id": "ucob", "expansionId": "stormblood", "categoryId": "ultimate", "name": "The Unending Coil of Bahamut (Ultimate)", "shortName": "UCOB", "sortOrder": 10 },
+    { "id": "uwu", "expansionId": "stormblood", "categoryId": "ultimate", "name": "The Weapon's Refrain (Ultimate)", "shortName": "UWU", "sortOrder": 20 },
+    { "id": "tea", "expansionId": "shadowbringers", "categoryId": "ultimate", "name": "The Epic of Alexander (Ultimate)", "shortName": "TEA", "sortOrder": 30 },
+    { "id": "dsr", "expansionId": "endwalker", "categoryId": "ultimate", "name": "Dragonsong's Reprise (Ultimate)", "shortName": "DSR", "sortOrder": 40 },
+    { "id": "top", "expansionId": "endwalker", "categoryId": "ultimate", "name": "The Omega Protocol (Ultimate)", "shortName": "TOP", "sortOrder": 50 },
+    { "id": "fru", "expansionId": "dawntrail", "categoryId": "ultimate", "name": "Futures Rewritten (Ultimate)", "shortName": "FRU", "sortOrder": 60 },
+
+    { "id": "arr-ex1", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Ultima's Bane", "shortName": "Ultima EX", "sortOrder": 10 },
+    { "id": "arr-ex2", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Howling Eye (Extreme)", "shortName": "Garuda EX", "sortOrder": 20 },
+    { "id": "arr-ex3", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Navel (Extreme)", "shortName": "Titan EX", "sortOrder": 30 },
+    { "id": "arr-ex4", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Bowl of Embers (Extreme)", "shortName": "Ifrit EX", "sortOrder": 40 },
+    { "id": "arr-ex5", "expansionId": "arr", "categoryId": "extreme_trial", "name": "Thornmarch (Extreme)", "shortName": "Moggle Mog EX", "sortOrder": 50 },
+    { "id": "arr-ex6", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Whorleater (Extreme)", "shortName": "Leviathan EX", "sortOrder": 60 },
+    { "id": "arr-ex7", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Striking Tree (Extreme)", "shortName": "Ramuh EX", "sortOrder": 70 },
+    { "id": "arr-ex8", "expansionId": "arr", "categoryId": "extreme_trial", "name": "The Akh Afah Amphitheatre (Extreme)", "shortName": "Shiva EX", "sortOrder": 80 },
+
+    { "id": "hw-ex1", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "Thok ast Thok (Extreme)", "shortName": "Ravana EX", "sortOrder": 10 },
+    { "id": "hw-ex2", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "The Limitless Blue (Extreme)", "shortName": "Bismarck EX", "sortOrder": 20 },
+    { "id": "hw-ex3", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Thordan's Reign", "shortName": "Thordan EX", "sortOrder": 30 },
+    { "id": "hw-ex4", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "Containment Bay S1T7 (Extreme)", "shortName": "Sephirot EX", "sortOrder": 40 },
+    { "id": "hw-ex5", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Nidhogg's Rage", "shortName": "Nidhogg EX", "sortOrder": 50 },
+    { "id": "hw-ex6", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "Containment Bay P1T6 (Extreme)", "shortName": "Sophia EX", "sortOrder": 60 },
+    { "id": "hw-ex7", "expansionId": "heavensward", "categoryId": "extreme_trial", "name": "Containment Bay Z1T9 (Extreme)", "shortName": "Zurvan EX", "sortOrder": 70 },
+
+    { "id": "sb-ex1", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "The Pool of Tribute (Extreme)", "shortName": "Susano EX", "sortOrder": 10 },
+    { "id": "sb-ex2", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "Emanation (Extreme)", "shortName": "Lakshmi EX", "sortOrder": 20 },
+    { "id": "sb-ex3", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Shinryu's Domain", "shortName": "Shinryu EX", "sortOrder": 30 },
+    { "id": "sb-ex4", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "The Jade Stoa (Extreme)", "shortName": "Byakko EX", "sortOrder": 40 },
+    { "id": "sb-ex5", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "The Great Hunt (Extreme)", "shortName": "Rathalos EX", "sortOrder": 50 },
+    { "id": "sb-ex6", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Tsukuyomi's Pain", "shortName": "Tsukuyomi EX", "sortOrder": 60 },
+    { "id": "sb-ex7", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "Hells' Kier (Extreme)", "shortName": "Suzaku EX", "sortOrder": 70 },
+    { "id": "sb-ex8", "expansionId": "stormblood", "categoryId": "extreme_trial", "name": "The Wreath of Snakes (Extreme)", "shortName": "Seiryu EX", "sortOrder": 80 },
+
+    { "id": "shb-ex1", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "The Dancing Plague (Extreme)", "shortName": "Titania EX", "sortOrder": 10 },
+    { "id": "shb-ex2", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "The Crown of the Immaculate (Extreme)", "shortName": "Innocence EX", "sortOrder": 20 },
+    { "id": "shb-ex3", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Hades's Elegy", "shortName": "Hades EX", "sortOrder": 30 },
+    { "id": "shb-ex4", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "Cinder Drift (Extreme)", "shortName": "Ruby Weapon EX", "sortOrder": 40 },
+    { "id": "shb-ex5", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "Memoria Misera (Extreme)", "shortName": "Varis EX", "sortOrder": 50 },
+    { "id": "shb-ex6", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "The Seat of Sacrifice (Extreme)", "shortName": "WoL EX", "sortOrder": 60 },
+    { "id": "shb-ex7", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "Castrum Marinum (Extreme)", "shortName": "Emerald Weapon EX", "sortOrder": 70 },
+    { "id": "shb-ex8", "expansionId": "shadowbringers", "categoryId": "extreme_trial", "name": "The Cloud Deck (Extreme)", "shortName": "Diamond Weapon EX", "sortOrder": 80 },
+
+    { "id": "ew-ex1", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Zodiark's Fall", "shortName": "Zodiark EX", "sortOrder": 10 },
+    { "id": "ew-ex2", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Hydaelyn's Call", "shortName": "Hydaelyn EX", "sortOrder": 20 },
+    { "id": "ew-ex3", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Endsinger's Aria", "shortName": "Endsinger EX", "sortOrder": 30 },
+    { "id": "ew-ex4", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "Storm's Crown (Extreme)", "shortName": "Barbariccia EX", "sortOrder": 40 },
+    { "id": "ew-ex5", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "Mount Ordeals (Extreme)", "shortName": "Rubicante EX", "sortOrder": 50 },
+    { "id": "ew-ex6", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "The Voidcast Dais (Extreme)", "shortName": "Golbez EX", "sortOrder": 60 },
+    { "id": "ew-ex7", "expansionId": "endwalker", "categoryId": "extreme_trial", "name": "The Abyssal Fracture (Extreme)", "shortName": "Zeromus EX", "sortOrder": 70 },
+
+    { "id": "dt-ex1", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "Worqor Lar Dor (Extreme)", "shortName": "EX1", "sortOrder": 10 },
+    { "id": "dt-ex2", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "Everkeep (Extreme)", "shortName": "EX2", "sortOrder": 20 },
+    { "id": "dt-ex3", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Sphene's Burden", "shortName": "EX3", "sortOrder": 30 },
+    { "id": "dt-ex4", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "Recollection (Extreme)", "shortName": "EX4", "sortOrder": 40 },
+    { "id": "dt-ex5", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "The Minstrel's Ballad: Necron's Embrace", "shortName": "EX5", "sortOrder": 50 },
+    { "id": "dt-ex6", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "The Windward Wilds (Extreme)", "shortName": "EX6", "sortOrder": 60 },
+    { "id": "dt-ex7", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "Hell on Rails (Extreme)", "shortName": "EX7", "sortOrder": 70 },
+    { "id": "dt-ex8", "expansionId": "dawntrail", "categoryId": "extreme_trial", "name": "The Unmaking (Extreme)", "shortName": "EX8", "sortOrder": 80 },
+
+    { "id": "t6s", "expansionId": "arr", "categoryId": "savage_raid", "name": "The Second Coil of Bahamut - Turn 1 (Savage)", "shortName": "T6S", "sortOrder": 10 },
+    { "id": "t7s", "expansionId": "arr", "categoryId": "savage_raid", "name": "The Second Coil of Bahamut - Turn 2 (Savage)", "shortName": "T7S", "sortOrder": 20 },
+    { "id": "t8s", "expansionId": "arr", "categoryId": "savage_raid", "name": "The Second Coil of Bahamut - Turn 3 (Savage)", "shortName": "T8S", "sortOrder": 30 },
+    { "id": "t9s", "expansionId": "arr", "categoryId": "savage_raid", "name": "The Second Coil of Bahamut - Turn 4 (Savage)", "shortName": "T9S", "sortOrder": 40 },
+
+    { "id": "a1s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Fist of the Father (Savage)", "shortName": "A1S", "sortOrder": 10 },
+    { "id": "a2s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Cuff of the Father (Savage)", "shortName": "A2S", "sortOrder": 20 },
+    { "id": "a3s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Arm of the Father (Savage)", "shortName": "A3S", "sortOrder": 30 },
+    { "id": "a4s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Burden of the Father (Savage)", "shortName": "A4S", "sortOrder": 40 },
+    { "id": "a5s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Fist of the Son (Savage)", "shortName": "A5S", "sortOrder": 50 },
+    { "id": "a6s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Cuff of the Son (Savage)", "shortName": "A6S", "sortOrder": 60 },
+    { "id": "a7s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Arm of the Son (Savage)", "shortName": "A7S", "sortOrder": 70 },
+    { "id": "a8s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Burden of the Son (Savage)", "shortName": "A8S", "sortOrder": 80 },
+    { "id": "a9s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Eyes of the Creator (Savage)", "shortName": "A9S", "sortOrder": 90 },
+    { "id": "a10s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Breath of the Creator (Savage)", "shortName": "A10S", "sortOrder": 100 },
+    { "id": "a11s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Heart of the Creator (Savage)", "shortName": "A11S", "sortOrder": 110 },
+    { "id": "a12s", "expansionId": "heavensward", "categoryId": "savage_raid", "name": "Alexander - The Soul of the Creator (Savage)", "shortName": "A12S", "sortOrder": 120 },
+
+    { "id": "o1s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Deltascape V1.0 (Savage)", "shortName": "O1S", "sortOrder": 10 },
+    { "id": "o2s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Deltascape V2.0 (Savage)", "shortName": "O2S", "sortOrder": 20 },
+    { "id": "o3s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Deltascape V3.0 (Savage)", "shortName": "O3S", "sortOrder": 30 },
+    { "id": "o4s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Deltascape V4.0 (Savage)", "shortName": "O4S", "sortOrder": 40 },
+    { "id": "o5s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Sigmascape V1.0 (Savage)", "shortName": "O5S", "sortOrder": 50 },
+    { "id": "o6s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Sigmascape V2.0 (Savage)", "shortName": "O6S", "sortOrder": 60 },
+    { "id": "o7s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Sigmascape V3.0 (Savage)", "shortName": "O7S", "sortOrder": 70 },
+    { "id": "o8s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Sigmascape V4.0 (Savage)", "shortName": "O8S", "sortOrder": 80 },
+    { "id": "o9s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Alphascape V1.0 (Savage)", "shortName": "O9S", "sortOrder": 90 },
+    { "id": "o10s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Alphascape V2.0 (Savage)", "shortName": "O10S", "sortOrder": 100 },
+    { "id": "o11s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Alphascape V3.0 (Savage)", "shortName": "O11S", "sortOrder": 110 },
+    { "id": "o12s", "expansionId": "stormblood", "categoryId": "savage_raid", "name": "Alphascape V4.0 (Savage)", "shortName": "O12S", "sortOrder": 120 },
+
+    { "id": "e1s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Gate: Resurrection (Savage)", "shortName": "E1S", "sortOrder": 10 },
+    { "id": "e2s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Gate: Descent (Savage)", "shortName": "E2S", "sortOrder": 20 },
+    { "id": "e3s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Gate: Inundation (Savage)", "shortName": "E3S", "sortOrder": 30 },
+    { "id": "e4s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Gate: Sepulture (Savage)", "shortName": "E4S", "sortOrder": 40 },
+    { "id": "e5s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Verse: Fulmination (Savage)", "shortName": "E5S", "sortOrder": 50 },
+    { "id": "e6s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Verse: Furor (Savage)", "shortName": "E6S", "sortOrder": 60 },
+    { "id": "e7s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Verse: Iconoclasm (Savage)", "shortName": "E7S", "sortOrder": 70 },
+    { "id": "e8s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Verse: Refulgence (Savage)", "shortName": "E8S", "sortOrder": 80 },
+    { "id": "e9s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Promise: Umbra (Savage)", "shortName": "E9S", "sortOrder": 90 },
+    { "id": "e10s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Promise: Litany (Savage)", "shortName": "E10S", "sortOrder": 100 },
+    { "id": "e11s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Promise: Anamorphosis (Savage)", "shortName": "E11S", "sortOrder": 110 },
+    { "id": "e12s", "expansionId": "shadowbringers", "categoryId": "savage_raid", "name": "Eden's Promise: Eternity (Savage)", "shortName": "E12S", "sortOrder": 120 },
+
+    { "id": "p1s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Asphodelos: The First Circle (Savage)", "shortName": "P1S", "sortOrder": 10 },
+    { "id": "p2s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Asphodelos: The Second Circle (Savage)", "shortName": "P2S", "sortOrder": 20 },
+    { "id": "p3s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Asphodelos: The Third Circle (Savage)", "shortName": "P3S", "sortOrder": 30 },
+    { "id": "p4s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Asphodelos: The Fourth Circle (Savage)", "shortName": "P4S", "sortOrder": 40 },
+    { "id": "p5s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Abyssos: The Fifth Circle (Savage)", "shortName": "P5S", "sortOrder": 50 },
+    { "id": "p6s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Abyssos: The Sixth Circle (Savage)", "shortName": "P6S", "sortOrder": 60 },
+    { "id": "p7s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Abyssos: The Seventh Circle (Savage)", "shortName": "P7S", "sortOrder": 70 },
+    { "id": "p8s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Abyssos: The Eighth Circle (Savage)", "shortName": "P8S", "sortOrder": 80 },
+    { "id": "p9s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Anabaseios: The Ninth Circle (Savage)", "shortName": "P9S", "sortOrder": 90 },
+    { "id": "p10s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Anabaseios: The Tenth Circle (Savage)", "shortName": "P10S", "sortOrder": 100 },
+    { "id": "p11s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Anabaseios: The Eleventh Circle (Savage)", "shortName": "P11S", "sortOrder": 110 },
+    { "id": "p12s", "expansionId": "endwalker", "categoryId": "savage_raid", "name": "Anabaseios: The Twelfth Circle (Savage)", "shortName": "P12S", "sortOrder": 120 },
+
+    { "id": "m1s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Light-heavyweight M1 (Savage)", "shortName": "M1S", "sortOrder": 10 },
+    { "id": "m2s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Light-heavyweight M2 (Savage)", "shortName": "M2S", "sortOrder": 20 },
+    { "id": "m3s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Light-heavyweight M3 (Savage)", "shortName": "M3S", "sortOrder": 30 },
+    { "id": "m4s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Light-heavyweight M4 (Savage)", "shortName": "M4S", "sortOrder": 40 },
+    { "id": "m5s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Cruiserweight M1 (Savage)", "shortName": "M5S", "sortOrder": 50 },
+    { "id": "m6s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Cruiserweight M2 (Savage)", "shortName": "M6S", "sortOrder": 60 },
+    { "id": "m7s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Cruiserweight M3 (Savage)", "shortName": "M7S", "sortOrder": 70 },
+    { "id": "m8s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Cruiserweight M4 (Savage)", "shortName": "M8S", "sortOrder": 80 },
+    { "id": "m9s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Heavyweight M1 (Savage)", "shortName": "M9S", "sortOrder": 90 },
+    { "id": "m10s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Heavyweight M2 (Savage)", "shortName": "M10S", "sortOrder": 100 },
+    { "id": "m11s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Heavyweight M3 (Savage)", "shortName": "M11S", "sortOrder": 110 },
+    { "id": "m12s", "expansionId": "dawntrail", "categoryId": "savage_raid", "name": "AAC Heavyweight M4 (Savage)", "shortName": "M12S", "sortOrder": 120 }
   ]
 }
