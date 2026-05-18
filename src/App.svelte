@@ -13,6 +13,7 @@
     roleLabels,
     roles,
     type ContentCategoryGroup,
+    type ContentItem,
     type ContentResponse,
     type DeepDungeonRow,
     type SignupRole
@@ -66,7 +67,19 @@
     contentName: string;
     contentShortName: string | null;
     categoryName: string;
+    expansionName: string | null;
+    expansionShortName: string | null;
     role: SignupRole | undefined;
+  };
+
+  type ModalContentItem = ContentItem & {
+    expansionName: string | null;
+    expansionShortName: string | null;
+    expansionOrder: number;
+  };
+
+  type ModalContentCategory = Omit<ContentCategoryGroup, 'contents'> & {
+    contents: ModalContentItem[];
   };
 
   let deepDungeonRows = defaultDeepDungeonRows.map((row) => ({ ...row }));
@@ -86,6 +99,9 @@
   let deepDungeonSaveMessage = '';
   let selectedUserName = '';
   let selectedUserContentStatuses: UserContentStatus[] = [];
+  let userModalLoading = false;
+  let userModalError = '';
+  let fullModalCategories: ModalContentCategory[] | null = null;
 
   onMount(async () => {
     await loadDeepDungeonRows();
@@ -249,6 +265,7 @@
 
     try {
       await submitEntries({ ign, entries });
+      fullModalCategories = null;
       await refreshLoadedCategories();
       dirtyContentIds = new Set();
       dirtySelectionCount = 0;
@@ -400,14 +417,28 @@
     return value.trim().replace(/\s+/g, ' ').toLowerCase();
   }
 
-  function openUserModal(name: string) {
+  async function openUserModal(name: string) {
     selectedUserName = name;
-    selectedUserContentStatuses = getUserLearnerOrMissingContent(name);
+    selectedUserContentStatuses = [];
+    userModalLoading = true;
+    userModalError = '';
+
+    try {
+      const categories = await loadFullModalCategories();
+      selectedUserContentStatuses = getUserLearnerOrMissingContent(name, categories);
+    } catch (error) {
+      userModalError =
+        error instanceof Error ? error.message : 'Unable to load all content for this character.';
+    } finally {
+      userModalLoading = false;
+    }
   }
 
   function closeUserModal() {
     selectedUserName = '';
     selectedUserContentStatuses = [];
+    userModalLoading = false;
+    userModalError = '';
   }
 
   function handleWindowKeydown(event: KeyboardEvent) {
@@ -422,16 +453,70 @@
     }
   }
 
-  function getUserLearnerOrMissingContent(name: string) {
+  async function loadFullModalCategories() {
+    if (fullModalCategories) {
+      return fullModalCategories;
+    }
+
+    const [ultimates, extremeCategories, savageCategories] = await Promise.all([
+      fetchUltimates(),
+      Promise.all(expansions.map((expansion) => fetchExtremes(expansion.id))),
+      Promise.all(expansions.map((expansion) => fetchSavages(expansion.id)))
+    ]);
+
+    fullModalCategories = [
+      annotateModalCategory(ultimates, null),
+      mergeModalExpansionCategories(extremeCategories),
+      mergeModalExpansionCategories(savageCategories)
+    ];
+
+    return fullModalCategories;
+  }
+
+  function annotateModalCategory(
+    category: ContentCategoryGroup,
+    expansion: (typeof expansions)[number] | null
+  ): ModalContentCategory {
+    return {
+      ...category,
+      contents: category.contents.map((content) => ({
+        ...content,
+        expansionName: expansion?.name ?? null,
+        expansionShortName: expansion?.shortName ?? null,
+        expansionOrder: expansion
+          ? expansions.findIndex((currentExpansion) => currentExpansion.id === expansion.id)
+          : -1
+      }))
+    };
+  }
+
+  function mergeModalExpansionCategories(categories: ContentCategoryGroup[]): ModalContentCategory {
+    const [firstCategory] = categories;
+
+    return {
+      ...firstCategory,
+      contents: categories
+        .flatMap((category, index) => annotateModalCategory(category, expansions[index]).contents)
+        .sort((leftContent, rightContent) => {
+          if (leftContent.expansionOrder !== rightContent.expansionOrder) {
+            return leftContent.expansionOrder - rightContent.expansionOrder;
+          }
+
+          return leftContent.sortOrder - rightContent.sortOrder;
+        })
+    };
+  }
+
+  function getUserLearnerOrMissingContent(name: string, categories: ModalContentCategory[]) {
     const normalizedName = normalizeName(name);
 
-    if (!data || !normalizedName) {
+    if (!normalizedName) {
       return [];
     }
 
     const statuses: UserContentStatus[] = [];
 
-    for (const category of data.categories) {
+    for (const category of categories) {
       for (const content of category.contents) {
         const role = roles.find((currentRole) =>
           content.entries[currentRole].some((entry) => normalizeName(entry.ign) === normalizedName)
@@ -443,6 +528,8 @@
             contentName: content.name,
             contentShortName: content.shortName,
             categoryName: category.name,
+            expansionName: content.expansionName,
+            expansionShortName: content.expansionShortName,
             role
           });
         }
@@ -754,7 +841,11 @@
               ×
             </button>
           </div>
-          {#if selectedUserContentStatuses.length}
+          {#if userModalLoading}
+            <p class="user-modal-empty">Loading all content...</p>
+          {:else if userModalError}
+            <p class="user-modal-empty error">{userModalError}</p>
+          {:else if selectedUserContentStatuses.length}
             <ul class="user-content-list">
               {#each selectedUserContentStatuses as status}
                 <li class:learner-missing={!status.role}>
@@ -763,7 +854,11 @@
                     {#if status.contentShortName}
                       <span>{status.contentShortName}</span>
                     {/if}
-                    <small>{status.categoryName}</small>
+                    <small>
+                      {status.expansionShortName
+                        ? `${status.categoryName} · ${status.expansionShortName}`
+                        : status.categoryName}
+                    </small>
                   </div>
                   <em>{status.role ? roleLabels[status.role] : 'No role listed'}</em>
                 </li>

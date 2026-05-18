@@ -991,6 +991,10 @@ li.learner {
   text-transform: uppercase;
 }
 
+.user-modal-empty.error {
+  color: var(--red);
+}
+
 .deep-dungeon-section {
   margin-top: 72px;
 }
