@@ -665,8 +665,7 @@
       {/if}
     </section>
     <footer>
-      <p>FINAL FANTASY XIV ENDGAME TRACKER · COMMUNITY BOARD</p>
-      <p>Data is shared publicly. All characters are visible to all visitors.</p>
+      <p>If anything breaks bother Avery</p>
     </footer>
   {/if}
 </main>
