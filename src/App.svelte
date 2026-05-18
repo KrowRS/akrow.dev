@@ -61,6 +61,14 @@
     { key: 'pilgrims', label: "Pilgrim's Traverse" }
   ] as const;
 
+  type UserContentStatus = {
+    contentId: string;
+    contentName: string;
+    contentShortName: string | null;
+    categoryName: string;
+    role: SignupRole | undefined;
+  };
+
   let deepDungeonRows = defaultDeepDungeonRows.map((row) => ({ ...row }));
   let data: ContentResponse | null = null;
   let loading = true;
@@ -76,6 +84,8 @@
   let savePending = false;
   let saveMessage = '';
   let deepDungeonSaveMessage = '';
+  let selectedUserName = '';
+  let selectedUserContentStatuses: UserContentStatus[] = [];
 
   onMount(async () => {
     await loadDeepDungeonRows();
@@ -390,6 +400,58 @@
     return value.trim().replace(/\s+/g, ' ').toLowerCase();
   }
 
+  function openUserModal(name: string) {
+    selectedUserName = name;
+    selectedUserContentStatuses = getUserLearnerOrMissingContent(name);
+  }
+
+  function closeUserModal() {
+    selectedUserName = '';
+    selectedUserContentStatuses = [];
+  }
+
+  function handleWindowKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && selectedUserName) {
+      closeUserModal();
+    }
+  }
+
+  function handleModalBackdropClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
+      closeUserModal();
+    }
+  }
+
+  function getUserLearnerOrMissingContent(name: string) {
+    const normalizedName = normalizeName(name);
+
+    if (!data || !normalizedName) {
+      return [];
+    }
+
+    const statuses: UserContentStatus[] = [];
+
+    for (const category of data.categories) {
+      for (const content of category.contents) {
+        const role = roles.find((currentRole) =>
+          content.entries[currentRole].some((entry) => normalizeName(entry.ign) === normalizedName)
+        );
+
+        if (role === 'learner' || !role) {
+          statuses.push({
+            contentId: content.id,
+            contentName: content.name,
+            contentShortName: content.shortName,
+            categoryName: category.name,
+            role
+          });
+        }
+      }
+    }
+
+    return statuses;
+  }
+
   function categoryTone(categoryId: string) {
     if (categoryId === 'ultimate') {
       return 'ult';
@@ -426,6 +488,8 @@
 <svelte:head>
   <title>FFXIV Content Board</title>
 </svelte:head>
+
+<svelte:window on:keydown={handleWindowKeydown} />
 
 <main class="site-wrapper">
   <section class="profile-panel" aria-label="Character profile">
@@ -568,7 +632,15 @@
                       {#if content.entries[role].length}
                         <ul>
                           {#each content.entries[role] as entry}
-                            <li class={role}>{entry.ign}</li>
+                            <li class={role}>
+                              <button
+                                class="entry-name-btn"
+                                type="button"
+                                on:click={() => openUserModal(entry.ign)}
+                              >
+                                {entry.ign}
+                              </button>
+                            </li>
                           {/each}
                         </ul>
                       {:else}
@@ -664,6 +736,45 @@
         <p class="deep-save-message">{deepDungeonSaveMessage}</p>
       {/if}
     </section>
+    {#if selectedUserName}
+      <div class="modal-backdrop" role="presentation" on:click={handleModalBackdropClick}>
+        <div
+          class="user-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="user-modal-title"
+          tabindex="-1"
+        >
+          <div class="user-modal-header">
+            <div>
+              <p>Character</p>
+              <h2 id="user-modal-title">{selectedUserName}</h2>
+            </div>
+            <button class="modal-close-btn" type="button" aria-label="Close user content modal" on:click={closeUserModal}>
+              ×
+            </button>
+          </div>
+          {#if selectedUserContentStatuses.length}
+            <ul class="user-content-list">
+              {#each selectedUserContentStatuses as status}
+                <li class:learner-missing={!status.role}>
+                  <div>
+                    <strong>{status.contentName}</strong>
+                    {#if status.contentShortName}
+                      <span>{status.contentShortName}</span>
+                    {/if}
+                    <small>{status.categoryName}</small>
+                  </div>
+                  <em>{status.role ? roleLabels[status.role] : 'No role listed'}</em>
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <p class="user-modal-empty">No learner or unlisted content found.</p>
+          {/if}
+        </div>
+      </div>
+    {/if}
     <footer>
       <p>If anything breaks bother Avery</p>
     </footer>
