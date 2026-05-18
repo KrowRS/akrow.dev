@@ -1,6 +1,7 @@
 import type {
   ContentCategoryGroup,
   ContentResponse,
+  DeepDungeonRow,
   SubmitEntriesRequest,
   SubmitEntryRequest
 } from './types';
@@ -72,6 +73,23 @@ export async function submitEntries(payload: SubmitEntriesRequest): Promise<void
       'content-type': 'application/json'
     },
     body: JSON.stringify(payload)
+  });
+
+  await readJson<{ ok: true }>(response);
+}
+
+export async function fetchDeepDungeonProgress(): Promise<DeepDungeonRow[]> {
+  const response = await fetch('/api/deep-dungeon-progress');
+  return readJson<DeepDungeonRow[]>(response);
+}
+
+export async function saveDeepDungeonProgress(rows: DeepDungeonRow[]): Promise<void> {
+  const response = await fetch('/api/deep-dungeon-progress', {
+    method: 'PUT',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({ rows })
   });
 
   await readJson<{ ok: true }>(response);

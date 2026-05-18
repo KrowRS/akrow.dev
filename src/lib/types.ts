@@ -29,6 +29,14 @@ export interface ContentResponse {
   categories: ContentCategoryGroup[];
 }
 
+export interface DeepDungeonRow {
+  name: string;
+  palace: boolean;
+  heaven: string;
+  eureka: string;
+  pilgrims: string;
+}
+
 export interface SubmitEntryRequest {
   contentId: string;
   ign: string;

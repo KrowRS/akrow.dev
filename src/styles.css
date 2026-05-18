@@ -184,28 +184,6 @@ h1 span {
   box-shadow: 0 0 8px var(--sav-accent);
 }
 
-.refresh-button {
-  position: absolute;
-  top: 24px;
-  right: 0;
-  min-height: 34px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: rgba(11, 15, 26, 0.8);
-  color: var(--text-dim);
-  padding: 8px 14px;
-  font-family: "Cinzel", serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  transition: all 0.2s;
-}
-
-.refresh-button:hover {
-  border-color: var(--gold-dim);
-  color: var(--gold);
-}
-
 .state-panel {
   display: grid;
   place-items: center;
@@ -235,10 +213,11 @@ h1 span {
 
 .profile-panel {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto;
+  grid-template-columns: minmax(220px, 1fr) auto;
   gap: 12px;
   align-items: end;
-  margin: 0 auto 18px;
+  width: min(360px, 100%);
+  margin: 18px 0;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: linear-gradient(135deg, rgba(11, 15, 26, 0.92), rgba(17, 24, 39, 0.92));
@@ -366,6 +345,10 @@ h1 span {
   color: var(--sav-accent);
 }
 
+.section-label.deep {
+  color: var(--gold-light);
+}
+
 .section-label.ult::after,
 .section-label.ult::before {
   background: linear-gradient(90deg, transparent, var(--ult-accent));
@@ -381,23 +364,33 @@ h1 span {
   background: linear-gradient(90deg, transparent, var(--sav-accent));
 }
 
+.section-label.deep::after,
+.section-label.deep::before {
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+
 .section-label.ult::before,
 .section-label.ext::before,
-.section-label.sav::before {
+.section-label.sav::before,
+.section-label.deep::before {
   transform: rotate(180deg);
 }
 
 .category-heading {
-  display: flex;
-  justify-content: flex-end;
+  display: block;
+  width: 100%;
   margin: -8px 0 20px;
 }
 
 .expansion-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  width: 100%;
   gap: 8px;
+}
+
+.expansion-tabs button {
+  width: 100%;
 }
 
 .expansion-tabs button {
@@ -434,6 +427,13 @@ h1 span {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 20px;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.card-grid.loading {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .content-card {
@@ -816,6 +816,198 @@ li.learner {
   opacity: 0.4;
 }
 
+.deep-dungeon-section {
+  margin-top: 72px;
+}
+
+.deep-table-actions {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 0;
+}
+
+.deep-add-btn {
+  min-height: 34px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  background: rgba(200, 169, 110, 0.08);
+  color: var(--gold-light);
+  padding: 8px 14px;
+  font-family: "Cinzel", serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.deep-add-btn:hover,
+.deep-add-btn:focus-visible {
+  border-color: var(--gold);
+  background: rgba(200, 169, 110, 0.14);
+  box-shadow: 0 0 16px rgba(200, 169, 110, 0.16);
+  outline: none;
+}
+
+.deep-save-message {
+  min-height: 16px;
+  margin-top: 10px;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.deep-table-panel {
+  overflow: hidden;
+  border: 1px solid rgba(200, 169, 110, 0.22);
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.95), rgba(17, 24, 39, 0.95));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.deep-table-scroll {
+  overflow-x: auto;
+}
+
+.deep-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.deep-table th,
+.deep-table td {
+  border: 1px solid rgba(30, 45, 74, 0.85);
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.deep-table thead th {
+  border-color: rgba(200, 169, 110, 0.3);
+  background:
+    linear-gradient(180deg, rgba(200, 169, 110, 0.16), rgba(200, 169, 110, 0.04)),
+    var(--bg3);
+  color: var(--gold-light);
+  font-family: "Cinzel", serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.deep-table tbody th {
+  background: rgba(74, 158, 255, 0.08);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.deep-table tbody tr:nth-child(even) th {
+  background: rgba(74, 158, 255, 0.12);
+}
+
+.deep-table td {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.deep-name-input,
+.deep-cell-input {
+  width: 100%;
+  min-height: 28px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  outline: none;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.deep-name-input {
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.deep-cell-input {
+  padding: 4px;
+  text-align: center;
+}
+
+.deep-name-input:hover,
+.deep-cell-input:hover,
+.deep-name-input:focus,
+.deep-cell-input:focus {
+  border-color: rgba(200, 169, 110, 0.36);
+  background: rgba(6, 8, 16, 0.52);
+  box-shadow: 0 0 0 2px rgba(200, 169, 110, 0.08);
+}
+
+.deep-table td.cleared {
+  background: rgba(64, 200, 112, 0.15);
+  color: var(--helper);
+}
+
+.deep-table td.partial {
+  background: rgba(224, 160, 48, 0.15);
+  color: var(--derust);
+}
+
+.deep-table td.danger,
+.deep-table td.missing {
+  background: rgba(224, 80, 80, 0.12);
+  color: var(--red);
+}
+
+.deep-table td.danger {
+  color: #ff7a7a;
+}
+
+.check-box {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.check-box:hover,
+.check-box:focus-visible {
+  box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.12);
+  outline: none;
+  transform: scale(1.08);
+}
+
+.deep-table td.cleared .check-box {
+  background: var(--helper-dim);
+  box-shadow: 0 0 12px rgba(64, 200, 112, 0.18);
+}
+
 footer {
   margin-top: 80px;
   border-top: 1px solid var(--border);
@@ -839,11 +1031,6 @@ footer p + p {
 
   .site-header {
     padding-top: 76px;
-  }
-
-  .refresh-button {
-    right: 50%;
-    transform: translateX(50%);
   }
 
   .category-heading,

@@ -1,11 +1,20 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchContent, fetchExtremes, fetchSavages, fetchUltimates, submitEntries } from './lib/api';
+  import {
+    fetchContent,
+    fetchDeepDungeonProgress,
+    fetchExtremes,
+    fetchSavages,
+    fetchUltimates,
+    saveDeepDungeonProgress,
+    submitEntries
+  } from './lib/api';
   import {
     roleLabels,
     roles,
     type ContentCategoryGroup,
     type ContentResponse,
+    type DeepDungeonRow,
     type SignupRole
   } from './lib/types';
 
@@ -18,6 +27,41 @@
     { id: 'dawntrail', shortName: 'DT', name: 'Dawntrail' }
   ];
 
+  type DeepDungeonValueKey = 'heaven' | 'eureka' | 'pilgrims';
+
+  const deepDungeonStorageKey = 'deep-dungeon-progress';
+
+  const defaultDeepDungeonRows: DeepDungeonRow[] = [
+    { name: 'Astrid', palace: false, heaven: '1', eureka: '1', pilgrims: '1' },
+    { name: 'Avery', palace: true, heaven: '1', eureka: '0', pilgrims: '2' },
+    { name: 'Bari', palace: false, heaven: '4', eureka: '4', pilgrims: '' },
+    { name: 'Corvus', palace: false, heaven: '', eureka: '', pilgrims: '' },
+    { name: 'Eli', palace: false, heaven: '', eureka: '', pilgrims: '' },
+    { name: 'Ellix', palace: true, heaven: '4', eureka: '', pilgrims: '' },
+    { name: 'Frosty', palace: true, heaven: '4', eureka: '4', pilgrims: '' },
+    { name: 'Hanabi', palace: true, heaven: '4', eureka: '0', pilgrims: '3' },
+    { name: 'Kirby', palace: true, heaven: '4', eureka: '4', pilgrims: '8' },
+    { name: 'Krippy', palace: false, heaven: '', eureka: '', pilgrims: '' },
+    { name: 'Lhei', palace: true, heaven: '4', eureka: '1', pilgrims: '1' },
+    { name: 'Luna', palace: false, heaven: '', eureka: '', pilgrims: '' },
+    { name: 'Mateen', palace: false, heaven: '', eureka: '', pilgrims: '' },
+    { name: 'Preto', palace: true, heaven: '2', eureka: '2', pilgrims: '' },
+    { name: 'Raova', palace: true, heaven: '3', eureka: '', pilgrims: '' },
+    { name: 'Selene', palace: true, heaven: '2', eureka: '', pilgrims: '' },
+    { name: 'Selicia', palace: true, heaven: '4', eureka: '2', pilgrims: '' },
+    { name: 'Shark', palace: false, heaven: '', eureka: '', pilgrims: '' },
+    { name: 'Tiri', palace: true, heaven: '4', eureka: '4', pilgrims: '8' },
+    { name: 'Yen', palace: false, heaven: '4', eureka: '', pilgrims: '' }
+  ];
+
+  const deepDungeonColumns = [
+    { key: 'palace', label: 'Palace of the Dead' },
+    { key: 'heaven', label: 'Heaven on High' },
+    { key: 'eureka', label: 'Eureka Orthos' },
+    { key: 'pilgrims', label: "Pilgrim's Traverse" }
+  ] as const;
+
+  let deepDungeonRows = defaultDeepDungeonRows.map((row) => ({ ...row }));
   let data: ContentResponse | null = null;
   let loading = true;
   let globalError = '';
@@ -31,10 +75,93 @@
   let dirtySelectionCount = 0;
   let savePending = false;
   let saveMessage = '';
+  let deepDungeonSaveMessage = '';
 
   onMount(async () => {
+    await loadDeepDungeonRows();
     await loadContent();
   });
+
+  async function loadDeepDungeonRows() {
+    try {
+      const savedRows = await fetchDeepDungeonProgress();
+      deepDungeonRows = savedRows.length ? savedRows : defaultDeepDungeonRows.map((row) => ({ ...row }));
+      cacheDeepDungeonRows(deepDungeonRows);
+      return;
+    } catch {
+      deepDungeonSaveMessage = 'Using locally cached sheet data.';
+    }
+
+    const savedRows = localStorage.getItem(deepDungeonStorageKey);
+
+    if (!savedRows) {
+      return;
+    }
+
+    try {
+      const parsedRows = JSON.parse(savedRows);
+
+      if (Array.isArray(parsedRows)) {
+        deepDungeonRows = parsedRows.map((row, index) => ({
+          ...defaultDeepDungeonRows[index],
+          ...row,
+          name: String(row.name ?? defaultDeepDungeonRows[index]?.name ?? ''),
+          palace: Boolean(row.palace),
+          heaven: String(row.heaven ?? ''),
+          eureka: String(row.eureka ?? ''),
+          pilgrims: String(row.pilgrims ?? '')
+        }));
+      }
+    } catch {
+      localStorage.removeItem(deepDungeonStorageKey);
+    }
+  }
+
+  function cacheDeepDungeonRows(rows: DeepDungeonRow[]) {
+    localStorage.setItem(deepDungeonStorageKey, JSON.stringify(rows));
+  }
+
+  async function saveDeepDungeonRows(rows: DeepDungeonRow[]) {
+    cacheDeepDungeonRows(rows);
+    deepDungeonSaveMessage = 'Saving sheet...';
+
+    try {
+      await saveDeepDungeonProgress(rows);
+      deepDungeonSaveMessage = 'Sheet saved.';
+    } catch (error) {
+      deepDungeonSaveMessage =
+        error instanceof Error ? error.message : 'Unable to save sheet to Supabase.';
+    }
+  }
+
+  function updateDeepDungeonName(rowIndex: number, value: string) {
+    deepDungeonRows = deepDungeonRows.map((row, index) =>
+      index === rowIndex ? { ...row, name: value } : row
+    );
+    void saveDeepDungeonRows(deepDungeonRows);
+  }
+
+  function toggleDeepDungeonPalace(rowIndex: number) {
+    deepDungeonRows = deepDungeonRows.map((row, index) =>
+      index === rowIndex ? { ...row, palace: !row.palace } : row
+    );
+    void saveDeepDungeonRows(deepDungeonRows);
+  }
+
+  function updateDeepDungeonValue(rowIndex: number, key: DeepDungeonValueKey, value: string) {
+    deepDungeonRows = deepDungeonRows.map((row, index) =>
+      index === rowIndex ? { ...row, [key]: value.trim() } : row
+    );
+    void saveDeepDungeonRows(deepDungeonRows);
+  }
+
+  function addDeepDungeonUser() {
+    deepDungeonRows = [
+      ...deepDungeonRows,
+      { name: '', palace: false, heaven: '', eureka: '', pilgrims: '' }
+    ];
+    void saveDeepDungeonRows(deepDungeonRows);
+  }
 
   async function loadContent() {
     loading = true;
@@ -274,6 +401,26 @@
 
     return 'sav';
   }
+
+  function progressTone(value: string, key: DeepDungeonValueKey) {
+    if (!value) {
+      return 'missing';
+    }
+
+    if (value === '0') {
+      return 'danger';
+    }
+
+    if ((key === 'heaven' || key === 'eureka') && value === '4') {
+      return 'cleared';
+    }
+
+    if (key === 'pilgrims' && value === '8') {
+      return 'cleared';
+    }
+
+    return 'partial';
+  }
 </script>
 
 <svelte:head>
@@ -281,20 +428,6 @@
 </svelte:head>
 
 <main class="site-wrapper">
-  <header class="site-header">
-    <p class="header-eyebrow">Final Fantasy XIV</p>
-    <h1>Content <span>Tracker</span></h1>
-    <p class="subtitle">Community Endgame Board</p>
-    <div class="legend" aria-label="Content categories">
-      <div class="legend-item"><span class="legend-dot ult"></span>Ultimate</div>
-      <div class="legend-item"><span class="legend-dot ext"></span>Extreme</div>
-      <div class="legend-item"><span class="legend-dot sav"></span>Savage</div>
-    </div>
-    <button class="refresh-button" type="button" on:click={loadContent} disabled={loading}>
-      Refresh
-    </button>
-  </header>
-
   <section class="profile-panel" aria-label="Character profile">
     <div class="profile-field">
       <label for="master-name">Character Name</label>
@@ -331,6 +464,10 @@
     {/if}
   </section>
 
+  <header class="site-header">
+    <h1>Comfy Content <span>Tracker</span></h1>
+  </header>
+
   {#if loading}
     <section class="state-panel">Loading content...</section>
   {:else if globalError}
@@ -358,7 +495,7 @@
                     title={expansion.name}
                     on:click={() => changeExtremeExpansion(expansion.id)}
                   >
-                    {expansion.shortName}
+                    {expansion.name}
                   </button>
                 {/each}
               </div>
@@ -374,7 +511,7 @@
                     title={expansion.name}
                     on:click={() => changeSavageExpansion(expansion.id)}
                   >
-                    {expansion.shortName}
+                    {expansion.name}
                   </button>
                 {/each}
               </div>
@@ -383,7 +520,7 @@
           {#if categoryLoading === category.id}
             <p class="category-status">Loading {category.name.toLowerCase()}...</p>
           {/if}
-          <div class="card-grid">
+          <div class="card-grid" class:loading={categoryLoading === category.id}>
             {#each category.contents as content}
               <article class={`content-card ${categoryTone(category.id)}`}>
                 <div class="card-top-bar"></div>
@@ -446,6 +583,86 @@
           </div>
         </div>
       {/each}
+    </section>
+    <section class="deep-dungeon-section" aria-label="Deep dungeon progress">
+      <div class="section-label deep">
+        <span>Deep Dungeon Progress</span>
+      </div>
+      <div class="deep-table-panel">
+        <div class="deep-table-scroll">
+          <table class="deep-table">
+            <thead>
+              <tr>
+                <th scope="col">Character</th>
+                {#each deepDungeonColumns as column}
+                  <th scope="col">{column.label}</th>
+                {/each}
+              </tr>
+            </thead>
+            <tbody>
+              {#each deepDungeonRows as row, rowIndex}
+                <tr>
+                  <th scope="row">
+                    <input
+                      class="deep-name-input"
+                      value={row.name}
+                      aria-label="Character name"
+                      maxlength="64"
+                      on:input={(event) => updateDeepDungeonName(rowIndex, event.currentTarget.value)}
+                    />
+                  </th>
+                  <td class:cleared={row.palace} class:missing={!row.palace}>
+                    <button
+                      class="check-box"
+                      type="button"
+                      aria-pressed={row.palace}
+                      aria-label={row.palace ? 'Mark Palace of the Dead incomplete' : 'Mark Palace of the Dead cleared'}
+                      on:click={() => toggleDeepDungeonPalace(rowIndex)}
+                    >
+                      {row.palace ? '✓' : ''}
+                    </button>
+                  </td>
+                  <td class={progressTone(row.heaven, 'heaven')}>
+                    <input
+                      class="deep-cell-input"
+                      value={row.heaven}
+                      aria-label={`${row.name} Heaven on High progress`}
+                      maxlength="8"
+                      on:input={(event) => updateDeepDungeonValue(rowIndex, 'heaven', event.currentTarget.value)}
+                    />
+                  </td>
+                  <td class={progressTone(row.eureka, 'eureka')}>
+                    <input
+                      class="deep-cell-input"
+                      value={row.eureka}
+                      aria-label={`${row.name} Eureka Orthos progress`}
+                      maxlength="8"
+                      on:input={(event) => updateDeepDungeonValue(rowIndex, 'eureka', event.currentTarget.value)}
+                    />
+                  </td>
+                  <td class={progressTone(row.pilgrims, 'pilgrims')}>
+                    <input
+                      class="deep-cell-input"
+                      value={row.pilgrims}
+                      aria-label={`${row.name} Pilgrim's Traverse progress`}
+                      maxlength="8"
+                      on:input={(event) => updateDeepDungeonValue(rowIndex, 'pilgrims', event.currentTarget.value)}
+                    />
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="deep-table-actions">
+        <button class="deep-add-btn" type="button" on:click={addDeepDungeonUser}>
+          Add User
+        </button>
+      </div>
+      {#if deepDungeonSaveMessage}
+        <p class="deep-save-message">{deepDungeonSaveMessage}</p>
+      {/if}
     </section>
     <footer>
       <p>FINAL FANTASY XIV ENDGAME TRACKER · COMMUNITY BOARD</p>
