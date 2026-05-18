@@ -213,7 +213,7 @@ h1 span {
 
 .profile-panel {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto;
+  grid-template-columns: 1fr;
   gap: 12px;
   align-items: end;
   width: min(360px, 100%);
@@ -264,13 +264,15 @@ h1 span {
 .profile-actions {
   display: flex;
   gap: 8px;
+  width: 100%;
 }
 
 .profile-btn {
+  flex: 1 1 0;
   min-height: 40px;
-  min-width: 92px;
+  min-width: 0;
   border-radius: 3px;
-  padding: 9px 16px;
+  padding: 9px 12px;
   font-family: "Cinzel", serif;
   font-size: 10px;
   font-weight: 700;
@@ -1215,18 +1217,6 @@ footer p + p {
   .category-heading,
   .expansion-tabs {
     justify-content: center;
-  }
-
-  .profile-panel {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-actions {
-    justify-content: stretch;
-  }
-
-  .profile-btn {
-    flex: 1;
   }
 
   .card-grid {
