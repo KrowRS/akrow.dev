@@ -1,4 +1,3 @@
-# Stroodlenoodle
 
 Dynamic FFXIV content signup board with a Svelte frontend, Cloudflare Worker API, Hono, and Supabase.
 
