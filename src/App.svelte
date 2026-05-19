@@ -279,12 +279,21 @@
     localStorage.setItem(deepDungeonStorageKey, JSON.stringify(rows));
   }
 
-  async function saveDeepDungeonRows(rows: DeepDungeonRow[]) {
-    cacheDeepDungeonRows(rows);
+  function sortDeepDungeonRows(rows: DeepDungeonRow[]) {
+    return [...rows].sort((leftRow, rightRow) =>
+      normalizeName(leftRow.name).localeCompare(normalizeName(rightRow.name))
+    );
+  }
+
+  async function saveDeepDungeonRows(rows: DeepDungeonRow[], sortRows = true) {
+    const nextRows = sortRows ? sortDeepDungeonRows(rows) : rows;
+
+    deepDungeonRows = nextRows;
+    cacheDeepDungeonRows(nextRows);
     deepDungeonSaveMessage = 'Saving sheet...';
 
     try {
-      await saveDeepDungeonProgress(rows);
+      await saveDeepDungeonProgress(nextRows);
       deepDungeonSaveMessage = 'Sheet saved.';
     } catch (error) {
       deepDungeonSaveMessage =
@@ -366,7 +375,6 @@
     deepDungeonRows = deepDungeonRows.map((row, index) =>
       index === rowIndex ? { ...row, name: value } : row
     );
-    void saveDeepDungeonRows(deepDungeonRows);
   }
 
   function toggleDeepDungeonPalace(rowIndex: number) {
@@ -1038,6 +1046,7 @@
                       aria-label="Character name"
                       maxlength="64"
                       on:input={(event) => updateDeepDungeonName(rowIndex, event.currentTarget.value)}
+                      on:blur={() => saveDeepDungeonRows(deepDungeonRows)}
                     />
                   </th>
                   <td class:cleared={row.palace} class:missing={!row.palace}>

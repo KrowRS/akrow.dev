@@ -163,7 +163,7 @@ begin
   delete from deep_dungeon_progress where true;
 
   v_sort_order := 1;
-  for v_row in select * from jsonb_array_elements(p_rows)
+  for v_row in select value from jsonb_array_elements(p_rows) order by normalize_ign(value->>'name')
   loop
     if length(coalesce(v_row->>'name', '')) > 64 then
       raise exception 'Each character name must be 64 characters or fewer.';
