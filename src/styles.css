@@ -111,6 +111,47 @@ button:disabled {
   opacity: 0.5;
 }
 
+.view-switcher {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  justify-content: center;
+  gap: 10px;
+  margin: -14px auto 42px;
+}
+
+.view-switcher button {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: rgba(17, 24, 39, 0.86);
+  color: var(--text-dim);
+  padding: 10px 14px;
+  font-family: "Cinzel", serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    color 0.2s,
+    background 0.2s;
+}
+
+.view-switcher button:hover,
+.view-switcher button:focus-visible {
+  border-color: var(--gold-dim);
+  color: var(--gold-light);
+  outline: none;
+}
+
+.view-switcher button.active {
+  border-color: var(--blue);
+  background: linear-gradient(135deg, rgba(26, 58, 106, 0.9), rgba(15, 34, 72, 0.9));
+  color: var(--blue);
+  box-shadow: 0 0 18px rgba(74, 158, 255, 0.18);
+}
+
 .header-eyebrow {
   margin-bottom: 16px;
   color: var(--gold);
@@ -211,22 +252,90 @@ h1 span {
   text-transform: uppercase;
 }
 
+.view-transition-panel {
+  position: relative;
+  animation: viewFadeIn 0.36s ease both;
+}
+
+.view-transition-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 14% 18%, rgba(232, 201, 138, 0.34) 0 1px, transparent 2px),
+    radial-gradient(circle at 34% 72%, rgba(74, 158, 255, 0.26) 0 1px, transparent 2px),
+    radial-gradient(circle at 68% 28%, rgba(255, 255, 255, 0.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 78%, rgba(128, 96, 232, 0.24) 0 1px, transparent 2px),
+    linear-gradient(115deg, transparent 24%, rgba(232, 201, 138, 0.05), rgba(74, 158, 255, 0.04), transparent 68%);
+  background-size:
+    180px 180px,
+    220px 220px,
+    160px 160px,
+    240px 240px,
+    180% 100%;
+  border-radius: 4px;
+  opacity: 0;
+  animation: glitterSweep 0.48s ease-out both;
+}
+
+@keyframes viewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glitterSweep {
+  0% {
+    background-position:
+      0 0,
+      28px 42px,
+      18px 10px,
+      44px 64px,
+      100% 0;
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  35% {
+    opacity: 0.55;
+  }
+
+  100% {
+    background-position:
+      36px 28px,
+      60px 72px,
+      48px 34px,
+      76px 96px,
+      0 0;
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
 .profile-panel {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  align-items: end;
-  width: min(360px, 100%);
-  margin: 18px 0;
+  grid-template-columns: minmax(220px, 360px) auto;
+  gap: 10px;
+  align-items: center;
+  width: min(640px, 100%);
+  margin: -18px auto 36px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  background: linear-gradient(135deg, rgba(11, 15, 26, 0.92), rgba(17, 24, 39, 0.92));
-  padding: 18px;
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.78), rgba(17, 24, 39, 0.78));
+  padding: 10px;
 }
 
 .profile-field {
   display: grid;
-  gap: 7px;
+  gap: 5px;
 }
 
 .profile-field label {
@@ -239,13 +348,13 @@ h1 span {
 
 .profile-field input {
   width: 100%;
-  min-height: 40px;
+  min-height: 34px;
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--bg);
   color: var(--text);
-  padding: 9px 12px;
-  font-size: 13px;
+  padding: 7px 10px;
+  font-size: 12px;
   outline: none;
   transition:
     border-color 0.2s,
@@ -264,15 +373,14 @@ h1 span {
 .profile-actions {
   display: flex;
   gap: 8px;
-  width: 100%;
+  justify-content: flex-end;
 }
 
 .profile-btn {
-  flex: 1 1 0;
-  min-height: 40px;
-  min-width: 0;
+  min-height: 34px;
+  min-width: 86px;
   border-radius: 3px;
-  padding: 9px 12px;
+  padding: 7px 12px;
   font-family: "Cinzel", serif;
   font-size: 10px;
   font-weight: 700;
@@ -306,9 +414,11 @@ h1 span {
 .profile-message {
   grid-column: 1 / -1;
   color: var(--helper);
-  font-size: 11px;
+  min-height: 14px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.5px;
+  text-align: center;
   text-transform: uppercase;
 }
 
@@ -354,6 +464,10 @@ h1 span {
   color: var(--gold-light);
 }
 
+.section-label.mounts {
+  color: var(--blue);
+}
+
 .section-label.ult::after,
 .section-label.ult::before {
   background: linear-gradient(90deg, transparent, var(--ult-accent));
@@ -374,11 +488,69 @@ h1 span {
   background: linear-gradient(90deg, transparent, var(--gold));
 }
 
+.section-label.mounts::after,
+.section-label.mounts::before {
+  background: linear-gradient(90deg, transparent, var(--blue));
+}
+
 .section-label.ult::before,
 .section-label.ext::before,
 .section-label.sav::before,
-.section-label.deep::before {
+.section-label.deep::before,
+.section-label.mounts::before {
   transform: rotate(180deg);
+}
+
+.mounts-panel {
+  min-height: 360px;
+}
+
+.mounts-table-panel {
+  border-color: rgba(74, 158, 255, 0.24);
+}
+
+.mounts-table {
+  min-width: 680px;
+}
+
+.mounts-table td.unknown {
+  background: rgba(74, 158, 255, 0.08);
+  color: var(--text-dim);
+}
+
+.mount-status {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.mount-status.acquired {
+  background: #4d7f3d;
+  color: #d8ecd0;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.mount-status.missing {
+  border: 2px solid #a63636;
+  background: transparent;
+}
+
+.mounts-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.95), rgba(17, 24, 39, 0.95));
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .category-heading {
@@ -1212,6 +1384,19 @@ footer p + p {
 
   .site-header {
     padding-top: 76px;
+  }
+
+  .profile-panel {
+    grid-template-columns: 1fr;
+    margin-top: -12px;
+  }
+
+  .profile-actions {
+    width: 100%;
+  }
+
+  .profile-btn {
+    flex: 1 1 0;
   }
 
   .category-heading,

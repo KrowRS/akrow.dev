@@ -62,6 +62,136 @@
     { key: 'pilgrims', label: "Pilgrim's Traverse" }
   ] as const;
 
+  type MountTable = {
+    columns: string[];
+    rows: {
+      name: string;
+      values: (boolean | null)[];
+    }[];
+  };
+
+  const arrMountNames = ['Garuda', 'Ifrit', 'Titan', 'Ramuh', 'Leviathan', 'Shiva', 'Nightmare'];
+  const heavenswardMountNames = ['Ravana', 'Bismarck', 'Thordan', 'Nidhogg', 'Sephirot', 'Sophia', 'Zurvan'];
+  const stormbloodMountNames = ['Susano', 'Lakshmi', 'Shinryu', 'Byakko', 'Tsukuyomi', 'Suzaku', 'Seiryu', 'Rathalos'];
+  const shadowbringersMountNames = ['Titania', 'Innocence', 'Hades', 'Ruby', 'WoL', 'Emerald', 'Diamond'];
+  const endwalkerMountNames = ['Zodiark', 'Hydaelyn', 'Endsinger', 'Barbariccia', 'Rubicante', 'Golbez', 'Zeromus'];
+  const dawntrailMountNames = ['Valigarmanda', 'Zoraal Ja', 'Sphene', 'Zelenia', 'Necron', 'Doomtrain', 'Enuo', 'Arkveld'];
+  const arrMountRows = [
+    'Astrid',
+    'Avery',
+    'Bari',
+    'Corvus',
+    'Eli',
+    'Ellix',
+    'Frosty',
+    'Hanabi',
+    'Kirby',
+    'Krippy',
+    'Lhei',
+    'Luna',
+    'Mateen',
+    'Preto',
+    'Ragna',
+    'Raova',
+    'Selene',
+    'Selicia',
+    'Shark',
+    'Tiri',
+    'Will',
+    'Yen'
+  ];
+
+  function mountRow(name: string, values: boolean[]): MountTable['rows'][number] {
+    return { name, values };
+  }
+
+  function fullMountRows(columns: string[], overrides: Record<string, boolean[]> = {}) {
+    return arrMountRows.map((name) => mountRow(name, overrides[name] ?? columns.map(() => true)));
+  }
+
+  const defaultMountTables: Record<string, MountTable> = {
+    arr: {
+      columns: arrMountNames,
+      rows: fullMountRows(arrMountNames, {
+        Luna: [false, false, false, false, true, false, true]
+      })
+    },
+    heavensward: {
+      columns: heavenswardMountNames,
+      rows: fullMountRows(heavenswardMountNames, {
+        Luna: [false, false, false, false, false, false, true]
+      })
+    },
+    stormblood: {
+      columns: stormbloodMountNames,
+      rows: fullMountRows(stormbloodMountNames, {
+        Astrid: [true, true, true, true, true, true, true, false],
+        Corvus: [true, true, true, true, true, true, true, false],
+        Hanabi: [true, true, true, true, true, true, true, false],
+        Krippy: [true, true, false, true, false, false, false, false],
+        Luna: [true, true, true, true, true, false, true, false],
+        Shark: [true, true, false, true, true, false, false, true]
+      })
+    },
+    shadowbringers: {
+      columns: shadowbringersMountNames,
+      rows: fullMountRows(shadowbringersMountNames, {
+        Bari: [true, true, false, true, true, true, true],
+        Hanabi: [false, false, false, true, true, true, false],
+        Krippy: [true, true, false, true, true, false, false],
+        Raova: [true, true, true, false, true, false, false],
+        Shark: [true, true, false, false, true, true, true],
+        Will: [true, true, false, true, true, true, true]
+      })
+    },
+    endwalker: {
+      columns: endwalkerMountNames,
+      rows: fullMountRows(endwalkerMountNames, {
+        Astrid: [true, true, true, false, true, false, true],
+        Avery: [true, true, true, false, true, false, false],
+        Bari: [true, true, false, false, false, false, true],
+        Frosty: [false, true, false, true, false, false, false],
+        Hanabi: [false, true, false, false, false, false, false],
+        Krippy: [false, false, false, false, false, false, false],
+        Luna: [true, true, true, false, true, false, true],
+        Mateen: [true, true, true, false, true, true, true],
+        Preto: [true, true, true, true, true, true, false],
+        Raova: [false, false, true, false, false, false, false],
+        Selicia: [true, true, true, false, true, false, true],
+        Shark: [false, false, false, false, false, false, true],
+        Will: [true, true, true, false, false, false, true],
+        Yen: [true, true, false, false, false, false, false]
+      })
+    },
+    dawntrail: {
+      columns: dawntrailMountNames,
+      rows: fullMountRows(dawntrailMountNames, {
+        Astrid: [false, true, false, false, false, false, false, false],
+        Avery: [true, false, false, false, false, false, false, false],
+        Bari: [false, true, false, false, false, false, false, false],
+        Corvus: [false, false, false, false, false, false, false, false],
+        Eli: [true, true, false, false, false, false, false, false],
+        Ellix: [true, false, true, false, false, false, false, false],
+        Frosty: [true, true, true, true, true, false, false, false],
+        Hanabi: [true, false, false, false, false, false, false, false],
+        Kirby: [true, false, false, false, false, false, false, false],
+        Krippy: [false, false, false, false, false, false, false, false],
+        Lhei: [true, true, true, true, true, true, true, false],
+        Luna: [false, false, false, false, false, false, false, false],
+        Mateen: [true, true, false, false, false, false, false, true],
+        Preto: [false, false, false, false, false, false, false, false],
+        Ragna: [true, true, true, true, true, true, true, false],
+        Raova: [true, false, false, false, false, false, false, false],
+        Selene: [true, true, true, false, false, false, false, false],
+        Selicia: [true, false, false, true, false, false, false, false],
+        Shark: [false, false, false, false, false, false, false, false],
+        Tiri: [true, true, true, true, true, true, true, true],
+        Will: [false, false, false, false, false, false, false, false],
+        Yen: [false, false, false, false, false, false, false, false]
+      })
+    }
+  };
+
   type UserContentStatus = {
     contentId: string;
     contentName: string;
@@ -82,6 +212,7 @@
     contents: ModalContentItem[];
   };
 
+  let mountTables: Record<string, MountTable> = structuredClone(defaultMountTables);
   let deepDungeonRows = defaultDeepDungeonRows.map((row) => ({ ...row }));
   let data: ContentResponse | null = null;
   let loading = true;
@@ -102,6 +233,10 @@
   let userModalLoading = false;
   let userModalError = '';
   let fullModalCategories: ModalContentCategory[] | null = null;
+  let activeView: 'content' | 'mounts' = 'content';
+  let selectedMountExpansion = 'dawntrail';
+
+  $: selectedMountTable = mountTables[selectedMountExpansion];
 
   onMount(async () => {
     await loadDeepDungeonRows();
@@ -187,6 +322,38 @@
       { name: '', palace: false, heaven: '', eureka: '', pilgrims: '' }
     ];
     void saveDeepDungeonRows(deepDungeonRows);
+  }
+
+  function addMountUser() {
+    const table = mountTables[selectedMountExpansion];
+
+    mountTables = {
+      ...mountTables,
+      [selectedMountExpansion]: {
+        ...table,
+        rows: [
+          ...table.rows,
+          {
+            name: '',
+            values: table.columns.map(() => (selectedMountExpansion === 'arr' ? false : null))
+          }
+        ]
+      }
+    };
+  }
+
+  function updateMountUserName(rowIndex: number, value: string) {
+    const table = mountTables[selectedMountExpansion];
+
+    mountTables = {
+      ...mountTables,
+      [selectedMountExpansion]: {
+        ...table,
+        rows: table.rows.map((row, index) =>
+          index === rowIndex ? { ...row, name: value } : row
+        )
+      }
+    };
   }
 
   async function loadContent() {
@@ -579,45 +746,66 @@
 <svelte:window on:keydown={handleWindowKeydown} />
 
 <main class="site-wrapper">
-  <section class="profile-panel" aria-label="Character profile">
-    <div class="profile-field">
-      <label for="master-name">Character Name</label>
-      <input
-        id="master-name"
-        value={masterName}
-        placeholder="Enter character name"
-        maxlength="64"
-        disabled={editMode || savePending}
-        on:input={(event) => handleNameInput(event.currentTarget.value)}
-      />
-    </div>
-    <div class="profile-actions">
-      {#if editMode}
-        <button class="profile-btn secondary" type="button" on:click={cancelEditMode} disabled={savePending}>
-          Cancel
-        </button>
-        <button
-          class="profile-btn primary"
-          type="button"
-          on:click={saveDraft}
-          disabled={savePending}
-        >
-          {savePending ? 'Saving' : 'Save'}
-        </button>
-      {:else}
-        <button class="profile-btn primary" type="button" on:click={startEditMode} disabled={!masterName.trim()}>
-          Edit
-        </button>
-      {/if}
-    </div>
-    {#if saveMessage}
-      <p class:error={saveMessage !== 'Saved.'} class="profile-message">{saveMessage}</p>
-    {/if}
-  </section>
-
   <header class="site-header">
     <h1>Comfy Content <span>Tracker</span></h1>
   </header>
+
+  <nav class="view-switcher" aria-label="Content view">
+    <button
+      type="button"
+      class:active={activeView === 'content'}
+      aria-pressed={activeView === 'content'}
+      on:click={() => (activeView = 'content')}
+    >
+      Content Board
+    </button>
+    <button
+      type="button"
+      class:active={activeView === 'mounts'}
+      aria-pressed={activeView === 'mounts'}
+      on:click={() => (activeView = 'mounts')}
+    >
+      Mounts
+    </button>
+  </nav>
+
+  {#if activeView === 'content'}
+    <section class="profile-panel" aria-label="Character profile">
+      <div class="profile-field">
+        <label for="master-name">Character Name</label>
+        <input
+          id="master-name"
+          value={masterName}
+          placeholder="Enter character name"
+          maxlength="64"
+          disabled={editMode || savePending}
+          on:input={(event) => handleNameInput(event.currentTarget.value)}
+        />
+      </div>
+      <div class="profile-actions">
+        {#if editMode}
+          <button class="profile-btn secondary" type="button" on:click={cancelEditMode} disabled={savePending}>
+            Cancel
+          </button>
+          <button
+            class="profile-btn primary"
+            type="button"
+            on:click={saveDraft}
+            disabled={savePending}
+          >
+            {savePending ? 'Saving' : 'Save'}
+          </button>
+        {:else}
+          <button class="profile-btn primary" type="button" on:click={startEditMode} disabled={!masterName.trim()}>
+            Edit
+          </button>
+        {/if}
+      </div>
+      {#if saveMessage}
+        <p class:error={saveMessage !== 'Saved.'} class="profile-message">{saveMessage}</p>
+      {/if}
+    </section>
+  {/if}
 
   {#if loading}
     <section class="state-panel">Loading content...</section>
@@ -627,6 +815,9 @@
       <button type="button" on:click={loadContent}>Try again</button>
     </section>
   {:else if data}
+    {#key activeView}
+      <div class="view-transition-panel">
+        {#if activeView === 'content'}
     <section aria-label="Available content">
       {#each data.categories as category}
         <div class="category-block">
@@ -823,6 +1014,76 @@
         <p class="deep-save-message">{deepDungeonSaveMessage}</p>
       {/if}
     </section>
+        {:else}
+      <section class="mounts-panel" aria-label="Mount related content">
+        <div class="section-label mounts">
+          <span>Mount Related Content</span>
+        </div>
+        <div class="category-heading">
+          <div class="expansion-tabs" role="tablist" aria-label="Mount expansion">
+            {#each expansions as expansion}
+              <button
+                type="button"
+                role="tab"
+                aria-selected={selectedMountExpansion === expansion.id}
+                class:active={selectedMountExpansion === expansion.id}
+                title={expansion.name}
+                on:click={() => (selectedMountExpansion = expansion.id)}
+              >
+                {expansion.name}
+              </button>
+            {/each}
+          </div>
+        </div>
+        <div class="deep-table-panel mounts-table-panel">
+          <div class="deep-table-scroll">
+            <table class="deep-table mounts-table">
+              <thead>
+                <tr>
+                  <th scope="col">Character</th>
+                  {#each selectedMountTable.columns as column}
+                    <th scope="col">{column}</th>
+                  {/each}
+                </tr>
+              </thead>
+              <tbody>
+                {#each selectedMountTable.rows as row, rowIndex}
+                  <tr>
+                    <th scope="row">
+                      <input
+                        class="deep-name-input"
+                        value={row.name}
+                        aria-label="Character name"
+                        maxlength="64"
+                        on:input={(event) => updateMountUserName(rowIndex, event.currentTarget.value)}
+                      />
+                    </th>
+                    {#each row.values as value}
+                      <td class:cleared={value === true} class:missing={value === false} class:unknown={value === null}>
+                        {#if value === true}
+                          <span class="mount-status acquired" aria-label="Acquired">✓</span>
+                        {:else if value === false}
+                          <span class="mount-status missing" aria-label="Missing"></span>
+                        {:else}
+                          TBD
+                        {/if}
+                      </td>
+                    {/each}
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="deep-table-actions">
+          <button class="deep-add-btn" type="button" on:click={addMountUser}>
+            Add User
+          </button>
+        </div>
+      </section>
+        {/if}
+      </div>
+    {/key}
     {#if selectedUserName}
       <div class="modal-backdrop" role="presentation" on:click={handleModalBackdropClick}>
         <div
