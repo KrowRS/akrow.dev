@@ -335,18 +335,26 @@
     );
   }
 
-  async function saveSelectedMountTable(rows = mountTables[selectedMountExpansion].rows) {
+  function sortMountRows(rows: MountTable['rows']) {
+    return [...rows].sort((leftRow, rightRow) =>
+      normalizeName(leftRow.name).localeCompare(normalizeName(rightRow.name))
+    );
+  }
+
+  async function saveSelectedMountTable(rows = mountTables[selectedMountExpansion].rows, sortRows = true) {
+    const nextRows = sortRows ? sortMountRows(rows) : rows;
+
     mountTables = {
       ...mountTables,
       [selectedMountExpansion]: {
         ...mountTables[selectedMountExpansion],
-        rows
+        rows: nextRows
       }
     };
     mountSaveMessage = 'Saving sheet...';
 
     try {
-      await saveMountProgress(selectedMountExpansion, rows);
+      await saveMountProgress(selectedMountExpansion, nextRows);
       mountSaveMessage = 'Sheet saved.';
     } catch (error) {
       mountSaveMessage =
@@ -393,7 +401,7 @@
       }
     ];
 
-    void saveSelectedMountTable(rows);
+    void saveSelectedMountTable(rows, false);
   }
 
   function updateMountUserName(rowIndex: number, value: string) {
@@ -402,7 +410,13 @@
       index === rowIndex ? { ...row, name: value } : row
     );
 
-    void saveSelectedMountTable(rows);
+    mountTables = {
+      ...mountTables,
+      [selectedMountExpansion]: {
+        ...table,
+        rows
+      }
+    };
   }
 
   function toggleMountValue(rowIndex: number, valueIndex: number) {
@@ -1121,6 +1135,7 @@
                         aria-label="Character name"
                         maxlength="64"
                         on:input={(event) => updateMountUserName(rowIndex, event.currentTarget.value)}
+                        on:blur={() => saveSelectedMountTable()}
                       />
                     </th>
                     {#each row.values as value, valueIndex}
