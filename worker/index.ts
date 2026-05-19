@@ -4,6 +4,8 @@ import { setCookie } from "hono/cookie";
 import type {
   ContentCategoryGroup,
   DeepDungeonRow,
+  MountTable,
+  MountProgressRow,
   SubmitEntriesRequest,
   SignupRole,
   SubmitEntryRequest,
@@ -135,6 +137,22 @@ app.get("/api/deep-dungeon-progress", async (c) => {
   return c.json(result.data);
 });
 
+app.get("/api/mount-progress", async (c) => {
+  const expansionId = c.req.query("expansionId") || "dawntrail";
+  const result = await supabaseRpc<MountTable>(c.env, "list_mount_progress", {
+    p_expansion_id: expansionId,
+  });
+
+  if (!result.ok) {
+    return c.json(
+      { error: result.error.message || "Unable to load mount progress." },
+      500,
+    );
+  }
+
+  return c.json(result.data);
+});
+
 app.put("/api/entries", async (c) => {
   let payload: SubmitEntryRequest;
 
@@ -221,6 +239,36 @@ app.put("/api/deep-dungeon-progress", async (c) => {
     const status = result.error.code === "P0001" ? 400 : 500;
     return c.json(
       { error: result.error.message || "Unable to save deep dungeon progress." },
+      status,
+    );
+  }
+
+  return c.json({ ok: true });
+});
+
+app.put("/api/mount-progress", async (c) => {
+  let payload: { expansionId?: string; rows?: MountProgressRow[] };
+
+  try {
+    payload = await c.req.json();
+  } catch {
+    return c.json({ error: "Request body must be valid JSON." }, 400);
+  }
+
+  const validationError = validateMountProgressPayload(payload);
+  if (validationError) {
+    return c.json({ error: validationError }, 400);
+  }
+
+  const result = await supabaseRpc(c.env, "replace_mount_progress", {
+    p_expansion_id: payload.expansionId,
+    p_rows: payload.rows,
+  });
+
+  if (!result.ok) {
+    const status = result.error.code === "P0001" ? 400 : 500;
+    return c.json(
+      { error: result.error.message || "Unable to save mount progress." },
       status,
     );
   }
@@ -335,6 +383,47 @@ function validateDeepDungeonRows(rows: unknown): string | null {
       if (typeof candidate[key] !== "string" || candidate[key]!.length > 8) {
         return "Progress values must be 8 characters or fewer.";
       }
+    }
+  }
+
+  return null;
+}
+
+function validateMountProgressPayload(payload: {
+  expansionId?: string;
+  rows?: MountProgressRow[];
+}): string | null {
+  if (!payload || typeof payload !== "object") {
+    return "Request body is required.";
+  }
+
+  if (typeof payload.expansionId !== "string" || payload.expansionId.trim().length === 0) {
+    return "expansionId is required.";
+  }
+
+  if (!Array.isArray(payload.rows)) {
+    return "rows must be an array.";
+  }
+
+  if (payload.rows.length > 200) {
+    return "Spreadsheet can include 200 rows or fewer.";
+  }
+
+  for (const row of payload.rows) {
+    if (!row || typeof row !== "object") {
+      return "Each row must be an object.";
+    }
+
+    if (typeof row.name !== "string" || row.name.length > 64) {
+      return "Each character name must be 64 characters or fewer.";
+    }
+
+    if (!Array.isArray(row.values)) {
+      return "Each row must include mount values.";
+    }
+
+    if (row.values.some((value) => typeof value !== "boolean")) {
+      return "Mount values must be true or false.";
     }
   }
 

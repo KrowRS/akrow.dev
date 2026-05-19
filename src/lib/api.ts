@@ -2,6 +2,7 @@ import type {
   ContentCategoryGroup,
   ContentResponse,
   DeepDungeonRow,
+  MountTable,
   SubmitEntriesRequest,
   SubmitEntryRequest
 } from './types';
@@ -90,6 +91,24 @@ export async function saveDeepDungeonProgress(rows: DeepDungeonRow[]): Promise<v
       'content-type': 'application/json'
     },
     body: JSON.stringify({ rows })
+  });
+
+  await readJson<{ ok: true }>(response);
+}
+
+export async function fetchMountProgress(expansionId = 'dawntrail'): Promise<MountTable> {
+  const params = new URLSearchParams({ expansionId });
+  const response = await fetch(`/api/mount-progress?${params.toString()}`);
+  return readJson<MountTable>(response);
+}
+
+export async function saveMountProgress(expansionId: string, rows: MountTable['rows']): Promise<void> {
+  const response = await fetch('/api/mount-progress', {
+    method: 'PUT',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({ expansionId, rows })
   });
 
   await readJson<{ ok: true }>(response);

@@ -4,9 +4,11 @@
     fetchContent,
     fetchDeepDungeonProgress,
     fetchExtremes,
+    fetchMountProgress,
     fetchSavages,
     fetchUltimates,
     saveDeepDungeonProgress,
+    saveMountProgress,
     submitEntries
   } from './lib/api';
   import {
@@ -16,6 +18,7 @@
     type ContentItem,
     type ContentResponse,
     type DeepDungeonRow,
+    type MountTable,
     type SignupRole
   } from './lib/types';
 
@@ -61,14 +64,6 @@
     { key: 'eureka', label: 'Eureka Orthos' },
     { key: 'pilgrims', label: "Pilgrim's Traverse" }
   ] as const;
-
-  type MountTable = {
-    columns: string[];
-    rows: {
-      name: string;
-      values: (boolean | null)[];
-    }[];
-  };
 
   const arrMountNames = ['Garuda', 'Ifrit', 'Titan', 'Ramuh', 'Leviathan', 'Shiva', 'Nightmare'];
   const heavenswardMountNames = ['Ravana', 'Bismarck', 'Thordan', 'Nidhogg', 'Sephirot', 'Sophia', 'Zurvan'];
@@ -228,6 +223,7 @@
   let savePending = false;
   let saveMessage = '';
   let deepDungeonSaveMessage = '';
+  let mountSaveMessage = '';
   let selectedUserName = '';
   let selectedUserContentStatuses: UserContentStatus[] = [];
   let userModalLoading = false;
@@ -240,6 +236,7 @@
 
   onMount(async () => {
     await loadDeepDungeonRows();
+    await loadMountTables();
     await loadContent();
   });
 
@@ -295,6 +292,68 @@
     }
   }
 
+  async function loadMountTables() {
+    try {
+      const loadedTables = await Promise.all(
+        expansions.map(async (expansion) => {
+          const fallbackTable = defaultMountTables[expansion.id];
+          const loadedTable = await fetchMountProgress(expansion.id);
+
+          if (isUsableMountTable(loadedTable)) {
+            return [expansion.id, loadedTable] as const;
+          }
+
+          await saveMountProgress(expansion.id, fallbackTable.rows);
+          return [expansion.id, fallbackTable] as const;
+        })
+      );
+
+      mountTables = {
+        ...mountTables,
+        ...Object.fromEntries(loadedTables)
+      };
+      mountSaveMessage = '';
+    } catch (error) {
+      mountSaveMessage =
+        error instanceof Error ? error.message : 'Using bundled mount spreadsheet data.';
+    }
+  }
+
+  function isUsableMountTable(table: MountTable) {
+    return (
+      Array.isArray(table.columns) &&
+      table.columns.length > 0 &&
+      Array.isArray(table.rows) &&
+      table.rows.length > 0 &&
+      table.rows.every(
+        (row) =>
+          typeof row.name === 'string' &&
+          Array.isArray(row.values) &&
+          row.values.length === table.columns.length &&
+          row.values.every((value) => typeof value === 'boolean')
+      )
+    );
+  }
+
+  async function saveSelectedMountTable(rows = mountTables[selectedMountExpansion].rows) {
+    mountTables = {
+      ...mountTables,
+      [selectedMountExpansion]: {
+        ...mountTables[selectedMountExpansion],
+        rows
+      }
+    };
+    mountSaveMessage = 'Saving sheet...';
+
+    try {
+      await saveMountProgress(selectedMountExpansion, rows);
+      mountSaveMessage = 'Sheet saved.';
+    } catch (error) {
+      mountSaveMessage =
+        error instanceof Error ? error.message : 'Unable to save mount progress.';
+    }
+  }
+
   function updateDeepDungeonName(rowIndex: number, value: string) {
     deepDungeonRows = deepDungeonRows.map((row, index) =>
       index === rowIndex ? { ...row, name: value } : row
@@ -326,34 +385,40 @@
 
   function addMountUser() {
     const table = mountTables[selectedMountExpansion];
-
-    mountTables = {
-      ...mountTables,
-      [selectedMountExpansion]: {
-        ...table,
-        rows: [
-          ...table.rows,
-          {
-            name: '',
-            values: table.columns.map(() => (selectedMountExpansion === 'arr' ? false : null))
-          }
-        ]
+    const rows = [
+      ...table.rows,
+      {
+        name: '',
+        values: table.columns.map(() => false)
       }
-    };
+    ];
+
+    void saveSelectedMountTable(rows);
   }
 
   function updateMountUserName(rowIndex: number, value: string) {
     const table = mountTables[selectedMountExpansion];
+    const rows = table.rows.map((row, index) =>
+      index === rowIndex ? { ...row, name: value } : row
+    );
 
-    mountTables = {
-      ...mountTables,
-      [selectedMountExpansion]: {
-        ...table,
-        rows: table.rows.map((row, index) =>
-          index === rowIndex ? { ...row, name: value } : row
-        )
-      }
-    };
+    void saveSelectedMountTable(rows);
+  }
+
+  function toggleMountValue(rowIndex: number, valueIndex: number) {
+    const table = mountTables[selectedMountExpansion];
+    const rows = table.rows.map((row, index) =>
+      index === rowIndex
+        ? {
+            ...row,
+            values: row.values.map((value, currentValueIndex) =>
+              currentValueIndex === valueIndex ? !value : value
+            )
+          }
+        : row
+    );
+
+    void saveSelectedMountTable(rows);
   }
 
   async function loadContent() {
@@ -1058,15 +1123,21 @@
                         on:input={(event) => updateMountUserName(rowIndex, event.currentTarget.value)}
                       />
                     </th>
-                    {#each row.values as value}
-                      <td class:cleared={value === true} class:missing={value === false} class:unknown={value === null}>
-                        {#if value === true}
-                          <span class="mount-status acquired" aria-label="Acquired">✓</span>
-                        {:else if value === false}
-                          <span class="mount-status missing" aria-label="Missing"></span>
-                        {:else}
-                          TBD
-                        {/if}
+                    {#each row.values as value, valueIndex}
+                      <td class:cleared={value} class:missing={!value}>
+                        <button
+                          class="mount-status-btn"
+                          class:acquired={value}
+                          class:missing={!value}
+                          type="button"
+                          aria-pressed={value}
+                          aria-label={`${row.name || 'Unnamed character'} ${selectedMountTable.columns[valueIndex]} ${value ? 'acquired' : 'missing'}`}
+                          on:click={() => toggleMountValue(rowIndex, valueIndex)}
+                        >
+                          {#if value}
+                            ✓
+                          {/if}
+                        </button>
                       </td>
                     {/each}
                   </tr>
@@ -1080,6 +1151,9 @@
             Add User
           </button>
         </div>
+        {#if mountSaveMessage}
+          <p class="deep-save-message">{mountSaveMessage}</p>
+        {/if}
       </section>
         {/if}
       </div>

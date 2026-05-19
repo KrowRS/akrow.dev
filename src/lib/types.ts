@@ -37,6 +37,16 @@ export interface DeepDungeonRow {
   pilgrims: string;
 }
 
+export interface MountTable {
+  columns: string[];
+  rows: MountProgressRow[];
+}
+
+export interface MountProgressRow {
+  name: string;
+  values: boolean[];
+}
+
 export interface SubmitEntryRequest {
   contentId: string;
   ign: string;

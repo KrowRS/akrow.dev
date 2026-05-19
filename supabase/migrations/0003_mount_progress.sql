@@ -30,6 +30,30 @@ create table if not exists mount_progress_cells (
   unique (row_id, mount_id)
 );
 
+alter table mount_items
+add column if not exists is_active boolean not null default true;
+
+alter table mount_items
+add column if not exists created_at timestamptz not null default now();
+
+alter table mount_items
+add column if not exists updated_at timestamptz not null default now();
+
+alter table mount_progress_rows
+add column if not exists created_at timestamptz not null default now();
+
+alter table mount_progress_rows
+add column if not exists updated_at timestamptz not null default now();
+
+alter table mount_progress_cells
+add column if not exists acquired boolean not null default false;
+
+alter table mount_progress_cells
+add column if not exists created_at timestamptz not null default now();
+
+alter table mount_progress_cells
+add column if not exists updated_at timestamptz not null default now();
+
 drop trigger if exists mount_items_set_updated_at on mount_items;
 create trigger mount_items_set_updated_at
 before update on mount_items
@@ -298,14 +322,7 @@ as $$
     'expansionId', p_expansion_id,
     'columns', coalesce(
       (
-        select jsonb_agg(
-          jsonb_build_object(
-            'id', mounts.id,
-            'name', mounts.name,
-            'sortOrder', mounts.sort_order
-          )
-          order by mounts.sort_order
-        )
+        select jsonb_agg(mounts.name order by mounts.sort_order)
         from mount_items mounts
         where mounts.expansion_id = p_expansion_id
           and mounts.is_active = true

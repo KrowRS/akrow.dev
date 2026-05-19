@@ -518,24 +518,36 @@ h1 span {
   color: var(--text-dim);
 }
 
-.mount-status {
+.mount-status-btn {
   display: inline-grid;
   place-items: center;
   width: 16px;
   height: 16px;
+  padding: 0;
+  border: 0;
   border-radius: 2px;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 
-.mount-status.acquired {
+.mount-status-btn.acquired {
   background: #4d7f3d;
   color: #d8ecd0;
   font-size: 12px;
   line-height: 1;
 }
 
-.mount-status.missing {
+.mount-status-btn.missing {
   border: 2px solid #a63636;
   background: transparent;
+}
+
+.mount-status-btn:hover,
+.mount-status-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.12);
+  outline: none;
+  transform: scale(1.08);
 }
 
 .mounts-placeholder {
