@@ -106,7 +106,7 @@ button:disabled {
   content: "";
   display: block;
   height: 1px;
-  margin-top: 40px;
+  margin-top: 72px;
   background: linear-gradient(90deg, transparent, var(--gold), var(--blue), var(--gold), transparent);
   opacity: 0.5;
 }
@@ -163,6 +163,9 @@ button:disabled {
 }
 
 h1 {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
   color: #fff;
   font-family: "Cinzel", serif;
   font-size: clamp(2rem, 5vw, 3.5rem);
@@ -172,6 +175,20 @@ h1 {
   text-shadow:
     0 0 60px rgba(74, 158, 255, 0.4),
     0 0 120px rgba(74, 158, 255, 0.15);
+}
+
+h1::after {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + clamp(16px, 3vw, 48px));
+  z-index: -1;
+  width: clamp(140px, 18vw, 260px);
+  aspect-ratio: 1;
+  background: url('/starbird-watermark.png') center / contain no-repeat;
+  content: '';
+  opacity: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
 }
 
 h1 span {
